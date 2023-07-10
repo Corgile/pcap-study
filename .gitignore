@@ -1,0 +1,5 @@
+.idea
+cmake-build-vs-debug
+cmake-build-wsl-debug
+cmake-build-xmingw-debug
+cmake-build-mingw-debug
