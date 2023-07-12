@@ -4,6 +4,11 @@ project(pcap_study)
 set(target demo)
 set(CMAKE_CXX_STANDARD 17)
 
+set(PLATFORM "" CACHE STRING "Specify Target Platform")
+
+# 使用变量来设置宏定义
+add_compile_definitions(${PLATFORM})
+
 if (WIN32)
     message(STATUS "================= INCLUDE: windows环境==================")
     set(PCAP_ROOT D:/environment/npcap-sdk/v1.13)
@@ -37,7 +42,7 @@ if (MSVC)
     add_definitions("/wd4068 /wd4200 /wd4244 /wd4267 /wd4819 /utf-8")
 endif ()
 
-add_executable(${target} main.cpp api.cpp ${ALL_SOURCES})
+add_executable(${target} main.cpp ${ALL_SOURCES})
 
 if (WIN32)
     message(STATUS "=================== LINK: windows环境 ==================")
@@ -50,5 +55,6 @@ elseif (UNIX)
 endif ()
 
 target_link_libraries(${target} PRIVATE lib::common-util)
+target_link_libraries(${target} PRIVATE lib::vendor-util)
 target_link_libraries(${target} PRIVATE lib::process-api)
 target_link_libraries(${target} PRIVATE lib::osi-headers)
