@@ -16,6 +16,7 @@ if (MSVC)
 endif ()
 
 message(STATUS "======= 构建 lib::osi-headers =======")
+
 foreach (file ${OSI_SRC})
     message(STATUS "添加源文件：${file} 到 ${PROJECT_NAME}")
 endforeach ()
@@ -23,3 +24,14 @@ endforeach ()
 # Add a library with the above sources
 add_library(${PROJECT_NAME} ${OSI_SRC})
 add_library(lib::osi-headers ALIAS ${PROJECT_NAME})
+
+if (WIN32)
+    message(STATUS "=================== LINK: WINDOWS ==================")
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            ${PCAP_ROOT}/Lib/x64/wpcap.lib
+            ${PCAP_ROOT}/Lib/x64/Packet.lib)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32 iphlpapi)
+elseif (UNIX)
+    message(STATUS "=================== LINK: LINUX ==================")
+    target_link_libraries(${PROJECT_NAME} PRIVATE pcap)
+endif ()

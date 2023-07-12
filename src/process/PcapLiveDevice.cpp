@@ -608,8 +608,8 @@ namespace pcpp {
 
   int PcapLiveDevice::sendPackets(const RawPacketVector &rawPackets, bool checkMtu) {
     int packetsSent = 0;
-    for (auto iter = rawPackets.begin(); iter != rawPackets.end(); iter++) {
-      if (sendPacket(**iter, checkMtu))
+    for (auto rawPacket : rawPackets) {
+      if (sendPacket(*rawPacket, checkMtu))
         packetsSent++;
     }
 
@@ -838,15 +838,14 @@ namespace pcpp {
   }
 
   IPv4Address PcapLiveDevice::getIPv4Address() const {
-    for (auto addrIter = m_Addresses.begin();
-         addrIter != m_Addresses.end(); addrIter++) {
-      if (Logger::getInstance().isDebugEnabled(PcapLogModuleLiveDevice) && addrIter->addr != nullptr) {
+    for (const auto & m_Addresse : m_Addresses) {
+      if (Logger::getInstance().isDebugEnabled(PcapLogModuleLiveDevice) && m_Addresse.addr != nullptr) {
         char addrAsString[INET6_ADDRSTRLEN];
-        internal::sockaddr2string(addrIter->addr, addrAsString);
+        internal::sockaddr2string(m_Addresse.addr, addrAsString);
         PCPP_LOG_DEBUG("Searching address " << addrAsString);
       }
 
-      in_addr *currAddr = internal::sockaddr2in_addr(addrIter->addr);
+      in_addr *currAddr = internal::sockaddr2in_addr(m_Addresse.addr);
       if (currAddr == nullptr) {
         PCPP_LOG_DEBUG("Address is NULL");
         continue;
@@ -859,14 +858,13 @@ namespace pcpp {
   }
 
   IPv6Address PcapLiveDevice::getIPv6Address() const {
-    for (auto addrIter = m_Addresses.begin(); addrIter != m_Addresses.end();
-         addrIter++) {
-      if (Logger::getInstance().isDebugEnabled(PcapLogModuleLiveDevice) && addrIter->addr != nullptr) {
+    for (const auto & m_Addresse : m_Addresses) {
+      if (Logger::getInstance().isDebugEnabled(PcapLogModuleLiveDevice) && m_Addresse.addr != nullptr) {
         char addrAsString[INET6_ADDRSTRLEN];
-        internal::sockaddr2string(addrIter->addr, addrAsString);
+        internal::sockaddr2string(m_Addresse.addr, addrAsString);
         PCPP_LOG_DEBUG("Searching address " << addrAsString);
       }
-      in6_addr *currAddr = internal::sockaddr2in6_addr(addrIter->addr);
+      in6_addr *currAddr = internal::sockaddr2in6_addr(m_Addresse.addr);
       if (currAddr == nullptr) {
         PCPP_LOG_DEBUG("Address is NULL");
         continue;

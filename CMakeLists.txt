@@ -5,9 +5,9 @@ set(target demo)
 set(CMAKE_CXX_STANDARD 17)
 
 set(PLATFORM "" CACHE STRING "Specify Target Platform")
-
 # 使用变量来设置宏定义
 add_compile_definitions(${PLATFORM})
+message(STATUS "Current Platform: ${PLATFORM}")
 
 if (WIN32)
     message(STATUS "================= INCLUDE: windows环境==================")
@@ -35,26 +35,10 @@ add_subdirectory(src/headers)
 add_subdirectory(src/process)
 add_subdirectory(src/vendor)
 
+add_executable(${target} main.cpp)
 
-if (MSVC)
-    # Disable VS warnings: Unknown pragma (4068), Zero-sized array in struct/union (4200), Possible loss of data (4244),
-    # Possible loss of data (4267), Character may not be represented (4819)
-    add_definitions("/wd4068 /wd4200 /wd4244 /wd4267 /wd4819 /utf-8")
-endif ()
-
-add_executable(${target} main.cpp ${ALL_SOURCES})
-
-if (WIN32)
-    message(STATUS "=================== LINK: windows环境 ==================")
-    target_link_libraries(${target} PRIVATE
-            ${PCAP_ROOT}/Lib/x64/wpcap.lib
-            ${PCAP_ROOT}/Lib/x64/Packet.lib)
-    target_link_libraries(${target} PRIVATE ws2_32 iphlpapi)
-elseif (UNIX)
-    target_link_libraries(${target} PRIVATE pcap)
-endif ()
-
-target_link_libraries(${target} PRIVATE lib::common-util)
-target_link_libraries(${target} PRIVATE lib::vendor-util)
+# target_link_libraries() 里面必须使用倒序，越基础的库越往后放 否则一堆undefined
 target_link_libraries(${target} PRIVATE lib::process-api)
 target_link_libraries(${target} PRIVATE lib::osi-headers)
+target_link_libraries(${target} PRIVATE lib::common-util)
+target_link_libraries(${target} PRIVATE lib::vendor-util)

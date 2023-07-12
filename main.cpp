@@ -52,7 +52,7 @@ struct PacketStats
   /**
    * Print stats to console
    */
-  void printToConsole()
+  void printToConsole() const
   {
     std::cout
         << "Ethernet packet count: " << ethPacketCount << std::endl
@@ -70,10 +70,10 @@ struct PacketStats
 /**
  * A callback function for the async capture which is called each time a packet is captured
  */
-static void onPacketArrives(pcpp::RawPacket* packet, pcpp::PcapLiveDevice* dev, void* cookie)
+static void onPacketArrives(pcpp::RawPacket* packet, [[maybe_unused]] pcpp::PcapLiveDevice* dev, void* cookie)
 {
   // extract the stats object form the cookie
-  PacketStats* stats = (PacketStats*)cookie;
+  auto* stats = (PacketStats*)cookie;
 
   // parsed the raw packet
   pcpp::Packet parsedPacket(packet);
@@ -86,10 +86,10 @@ static void onPacketArrives(pcpp::RawPacket* packet, pcpp::PcapLiveDevice* dev, 
 /**
  * a callback function for the blocking mode capture which is called each time a packet is captured
  */
-static bool onPacketArrivesBlockingMode(pcpp::RawPacket* packet, pcpp::PcapLiveDevice* dev, void* cookie)
+static bool onPacketArrivesBlockingMode(pcpp::RawPacket* packet, [[maybe_unused]] pcpp::PcapLiveDevice* dev, void* cookie)
 {
   // extract the stats object form the cookie
-  PacketStats* stats = (PacketStats*)cookie;
+  auto* stats = (PacketStats*)cookie;
 
   // parsed the raw packet
   pcpp::Packet parsedPacket(packet);
@@ -105,10 +105,10 @@ static bool onPacketArrivesBlockingMode(pcpp::RawPacket* packet, pcpp::PcapLiveD
 /**
  * main method of the application
  */
-int main(int argc, char* argv[])
+int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
   // IPv4 address of the interface we want to sniff
-  std::string interfaceIPAddr = "192.168.2.29";
+  std::string interfaceIPAddr = "192.168.8.184";
 
   // find the interface by IP address
   pcpp::PcapLiveDevice* dev = pcpp::PcapLiveDeviceList::getInstance().getPcapLiveDeviceByIp(interfaceIPAddr);
@@ -130,8 +130,8 @@ int main(int argc, char* argv[])
       << "   Default gateway:       " << dev->getDefaultGateway() << std::endl // get default gateway
       << "   Interface MTU:         " << dev->getMtu() << std::endl; // get interface MTU
 
-  if (dev->getDnsServers().size() > 0)
-    std::cout << "   DNS server:            " << dev->getDnsServers().at(0) << std::endl;
+  if (!pcpp::PcapLiveDevice::getDnsServers().empty())
+    std::cout << "   DNS server:            " << pcpp::PcapLiveDevice::getDnsServers().at(0) << std::endl;
 
   // open the device before start capturing/sending packets
   if (!dev->open())
@@ -184,10 +184,10 @@ int main(int argc, char* argv[])
   dev->stopCapture();
 
   // go over the packet vector and feed all packets to the stats object
-  for (pcpp::RawPacketVector::ConstVectorIterator iter = packetVec.begin(); iter != packetVec.end(); iter++)
+  for (auto iter : packetVec)
   {
     // parse raw packet
-    pcpp::Packet parsedPacket(*iter);
+    pcpp::Packet parsedPacket(iter);
 
     // feed packet to the stats object
     stats.consumePacket(parsedPacket);
@@ -224,27 +224,15 @@ int main(int argc, char* argv[])
   std::cout << std::endl << "Sending " << packetVec.size() << " packets one by one..." << std::endl;
 
   // go over the vector of packets and send them one by one
-  for (pcpp::RawPacketVector::ConstVectorIterator iter = packetVec.begin(); iter != packetVec.end(); iter++)
-  {
+  for (auto iter : packetVec) {
     // send the packet. If fails exit the application
-    if (!dev->sendPacket(**iter))
+    if (!dev->sendPacket(*iter, true))
     {
       std::cerr << "Couldn't send packet" << std::endl;
       return 1;
     }
   }
   std::cout << packetVec.size() << " packets sent" << std::endl;
-
-
-  // Sending batch of packets
-  // ~~~~~~~~~~~~~~~~~~~~~~~~
-
-  std::cout << std::endl << "Sending " << packetVec.size() << " packets..." << std::endl;
-
-  // send all packets in the vector. The returned number shows how many packets were actually sent (expected to be equal to vector size)
-  int packetsSent = dev->sendPackets(packetVec);
-
-  std::cout << packetsSent << " packets sent" << std::endl;
 
 
   // Using filters
