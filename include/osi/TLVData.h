@@ -57,14 +57,14 @@ namespace pcpp {
     /**
      * A d'tor for this class, currently does nothing
      */
-    virtual ~TLVRecord() {}
+    virtual ~TLVRecord() = default;
 
     /**
      * Assign a pointer to the TLV record raw data (byte array)
      * @param[in] recordRawData A pointer to the TLV record raw data
      */
     void assign(uint8_t *recordRawData) {
-      if (recordRawData == NULL)
+      if (recordRawData == nullptr)
         m_Data = NULL;
       else
         m_Data = (TLVRawData *) recordRawData;
@@ -224,7 +224,7 @@ namespace pcpp {
     /**
      * A d'tor for this class which currently does nothing
      */
-    virtual ~TLVRecordReader() {}
+    virtual ~TLVRecordReader() = default;
 
     /**
      * Overload of the assignment operator for this class

@@ -45,7 +45,7 @@ namespace pcpp {
     /**
      * A d'tor for this class, currently does nothing
      */
-    ~NdpOption() {}
+    ~NdpOption() override = default;
 
     /**
      * @return NDP option type casted as pcpp::NDPNeighborOptionTypes enum. If the data is null a value
@@ -60,14 +60,14 @@ namespace pcpp {
 
     // implement abstract methods
 
-    size_t getTotalSize() const {
+    size_t getTotalSize() const override {
       if (m_Data == nullptr)
         return (size_t) 0;
 
       return (size_t) m_Data->recordLen * 8;
     }
 
-    size_t getDataSize() const {
+    size_t getDataSize() const override {
       if (m_Data == nullptr)
         return 0;
 
@@ -107,7 +107,7 @@ namespace pcpp {
    */
   class NDPLayerBase : public IcmpV6Layer {
   public:
-    virtual ~NDPLayerBase() {}
+    ~NDPLayerBase() override = default;
 
     /**
      * @return The number of NDP options in this layer
@@ -213,12 +213,12 @@ namespace pcpp {
      */
     NDPNeighborSolicitationLayer(uint8_t code, const IPv6Address &targetIP, const MacAddress &srcMac);
 
-    virtual ~NDPNeighborSolicitationLayer() {}
+    ~NDPNeighborSolicitationLayer() override = default;
 
     /**
      * @return Get the IP address specified as the target IP address in the solicitation message
      */
-    IPv6Address getTargetIP() const { return IPv6Address(getNdpHeader()->targetIP); };
+    IPv6Address getTargetIP() const { return {getNdpHeader()->targetIP}; };
 
     /**
      * Checks if the layer has a link layer address option set
@@ -232,14 +232,14 @@ namespace pcpp {
      */
     MacAddress getLinkLayerAddress() const;
 
-    std::string toString() const;
+    std::string toString() const override;
 
   private:
     void initLayer(uint8_t code, const IPv6Address &targetIP);
 
     ndpneighborsolicitationhdr *getNdpHeader() const { return (ndpneighborsolicitationhdr *) m_Data; }
 
-    size_t getNdpHeaderLen() const { return sizeof(ndpneighborsolicitationhdr); };
+    size_t getNdpHeaderLen() const override { return sizeof(ndpneighborsolicitationhdr); };
   };
 
   /**
@@ -319,7 +319,7 @@ namespace pcpp {
     NDPNeighborAdvertisementLayer(uint8_t code, const IPv6Address &targetIP, bool routerFlag, bool unicastFlag,
                                   bool overrideFlag);
 
-    virtual ~NDPNeighborAdvertisementLayer() {}
+    ~NDPNeighborAdvertisementLayer() override = default;
 
     /**
      * @return Get the target MAC address
@@ -329,7 +329,7 @@ namespace pcpp {
     /**
      * @return Get the target IP address
      */
-    IPv6Address getTargetIP() const { return IPv6Address(getNdpHeader()->targetIP); }
+    IPv6Address getTargetIP() const { return {getNdpHeader()->targetIP}; }
 
     /**
      * @return Get information if the target link-layer address was added in the option field of the common
@@ -351,14 +351,14 @@ namespace pcpp {
      */
     bool getOverrideFlag() const { return getNdpHeader()->override; }
 
-    std::string toString() const;
+    std::string toString() const override;
 
   private:
     void initLayer(uint8_t code, const IPv6Address &targetIP, bool routerFlag, bool unicastFlag, bool overrideFlag);
 
     ndpneighboradvertisementhdr *getNdpHeader() const { return (ndpneighboradvertisementhdr *) m_Data; }
 
-    size_t getNdpHeaderLen() const { return sizeof(ndpneighboradvertisementhdr); };
+    size_t getNdpHeaderLen() const override { return sizeof(ndpneighboradvertisementhdr); };
   };
 
 } // namespace pcpp

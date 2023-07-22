@@ -68,7 +68,7 @@ namespace pcpp {
   class HttpMessage : public TextBasedProtocolMessage {
   public:
 
-    virtual ~HttpMessage() {}
+    ~HttpMessage() override = default;
 
     /**
      * A static method that checks whether the port is considered as HTTP
@@ -79,16 +79,15 @@ namespace pcpp {
 
     // overridden methods
 
-    virtual HeaderField *addField(const std::string &fieldName, const std::string &fieldValue);
+    HeaderField *addField(const std::string &fieldName, const std::string &fieldValue) override;
 
-    virtual HeaderField *addField(const HeaderField &newField);
+    HeaderField *addField(const HeaderField &newField) override;
 
-    virtual HeaderField *
-    insertField(HeaderField *prevField, const std::string &fieldName, const std::string &fieldValue);
+    HeaderField *insertField(HeaderField *prevField, const std::string &fieldName, const std::string &fieldValue) override;
 
-    virtual HeaderField *insertField(HeaderField *prevField, const HeaderField &newField);
+    HeaderField *insertField(HeaderField *prevField, const HeaderField &newField) override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelApplicationLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelApplicationLayer; }
 
   protected:
     HttpMessage(uint8_t *data, size_t dataLen, AbstractLayer *prevLayer, Packet *packet) : TextBasedProtocolMessage(data,
@@ -106,9 +105,9 @@ namespace pcpp {
     }
 
     // implementation of abstract methods
-    char getHeaderFieldNameValueSeparator() const { return ':'; }
+    char getHeaderFieldNameValueSeparator() const override { return ':'; }
 
-    bool spacesAllowedBetweenHeaderFieldNameAndValue() const { return true; }
+    bool spacesAllowedBetweenHeaderFieldNameAndValue() const override { return true; }
   };
 
 
@@ -177,7 +176,7 @@ namespace pcpp {
      */
     HttpRequestLayer(HttpMethod method, const std::string &uri, HttpVersion version);
 
-    virtual ~HttpRequestLayer();
+    ~HttpRequestLayer() override;
 
     /**
      * A copy constructor for this layer. This copy constructor inherits base copy constructor HttpMessage#HttpMessage() and add the functionality
@@ -209,7 +208,7 @@ namespace pcpp {
     std::string getUrl() const;
 
     // implement AbstractLayer's abstract methods
-    std::string toString() const;
+    std::string toString() const override;
 
   private:
     HttpRequestFirstLine *m_FirstLine;
@@ -429,7 +428,7 @@ namespace pcpp {
     HttpResponseLayer(HttpVersion version, HttpResponseLayer::HttpResponseStatusCode statusCode,
                       std::string statusCodeString = "");
 
-    virtual ~HttpResponseLayer();
+    ~HttpResponseLayer() override;
 
     /**
      * A copy constructor for this layer. This copy constructor inherits base copy constructor HttpMessage#HttpMessage() and adds the functionality
@@ -474,7 +473,7 @@ namespace pcpp {
 
     // implement AbstractLayer's abstract methods
 
-    std::string toString() const;
+    std::string toString() const override;
 
   private:
     HttpResponseFirstLine *m_FirstLine;
@@ -567,11 +566,11 @@ namespace pcpp {
      */
     class HttpRequestFirstLineException : public std::exception {
     public:
-      ~HttpRequestFirstLineException() throw() {}
+      ~HttpRequestFirstLineException() noexcept override = default;
 
       void setMessage(const std::string &message) { m_Message = message; }
 
-      virtual const char *what() const throw() {
+      const char *what() const noexcept override {
         return m_Message.c_str();
       }
 
@@ -690,11 +689,11 @@ namespace pcpp {
      */
     class HttpResponseFirstLineException : public std::exception {
     public:
-      ~HttpResponseFirstLineException() throw() {}
+      ~HttpResponseFirstLineException() noexcept override = default;
 
       void setMessage(const std::string &message) { m_Message = message; }
 
-      virtual const char *what() const throw() {
+      const char *what() const noexcept override {
         return m_Message.c_str();
       }
 

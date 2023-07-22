@@ -5,7 +5,7 @@
 #include "osi/TLVData.h"
 #include "IpAddress.h"
 #include "IPLayer.h"
-#include <string.h>
+#include <cstring>
 #include <vector>
 
 /// @file
@@ -216,7 +216,7 @@ namespace pcpp {
     /**
      * A d'tor for this class, currently does nothing
      */
-    ~IPv4Option() {}
+    ~IPv4Option() override = default;
 
     /**
      * A method for parsing the sf_IPv4 option value as a list of sf_IPv4 addresses. This method is relevant only for certain types of sf_IPv4 options which their value is a list of sf_IPv4 addresses
@@ -234,7 +234,7 @@ namespace pcpp {
       if (dataSize < 2)
         return res;
 
-      uint8_t valueOffset = (uint8_t) (1);
+      auto valueOffset = (uint8_t) (1);
 
       while ((size_t) valueOffset < dataSize) {
         uint32_t curValue;
@@ -242,7 +242,7 @@ namespace pcpp {
         if (curValue == 0)
           break;
 
-        res.push_back(IPv4Address(curValue));
+        res.emplace_back(curValue);
 
         valueOffset += (uint8_t) (4);
       }
@@ -273,7 +273,7 @@ namespace pcpp {
 
       res.type = (IPv4TimestampOptionValue::TimestampType) m_Data->recordValue[1];
 
-      uint8_t valueOffset = (uint8_t) (2);
+      auto valueOffset = (uint8_t) (2);
       bool readIPAddr = (res.type == IPv4TimestampOptionValue::TimestampAndIP);
 
       while ((size_t) valueOffset < dataSize) {
@@ -283,7 +283,7 @@ namespace pcpp {
           break;
 
         if (readIPAddr)
-          res.ipAddresses.push_back(IPv4Address(curValue));
+          res.ipAddresses.emplace_back(curValue);
         else
           res.timestamps.push_back(curValue);
 
@@ -309,7 +309,7 @@ namespace pcpp {
 
     // implement abstract methods
 
-    size_t getTotalSize() const {
+    size_t getTotalSize() const override {
       if (m_Data == nullptr)
         return 0;
 
@@ -319,7 +319,7 @@ namespace pcpp {
       return (size_t) m_Data->recordLen;
     }
 
-    size_t getDataSize() const {
+    size_t getDataSize() const override {
       if (m_Data == nullptr)
         return 0;
 
@@ -448,7 +448,7 @@ namespace pcpp {
      * but adds a level of abstraction because IPAddress can be used for both sf_IPv4 and IPv6 addresses
      * @return An IPAddress containing the source address
      */
-    IPAddress getSrcIPAddress() const { return getSrcIPv4Address(); }
+    IPAddress getSrcIPAddress() const override { return getSrcIPv4Address(); }
 
     /**
      * Get the source IP address in the form of IPv4Address
@@ -460,14 +460,14 @@ namespace pcpp {
      * Set the source IP address
      * @param[in] ipAddr The IP address to set
      */
-    void setSrcIPv4Address(const IPv4Address &ipAddr) { getIPv4Header()->ipSrc = ipAddr.toInt(); }
+    void setSrcIPv4Address(const IPv4Address &ipAddr) const { getIPv4Header()->ipSrc = ipAddr.toInt(); }
 
     /**
      * Get the destination IP address in the form of IPAddress. This method is very similar to getDstIPv4Address(),
      * but adds a level of abstraction because IPAddress can be used for both sf_IPv4 and IPv6 addresses
      * @return An IPAddress containing the destination address
      */
-    IPAddress getDstIPAddress() const { return getDstIPv4Address(); }
+    IPAddress getDstIPAddress() const override { return getDstIPv4Address(); }
 
     /**
      * Get the destination IP address in the form of IPv4Address
@@ -479,7 +479,7 @@ namespace pcpp {
      * Set the dest IP address
      * @param[in] ipAddr The IP address to set
      */
-    void setDstIPv4Address(const IPv4Address &ipAddr) { getIPv4Header()->ipDst = ipAddr.toInt(); }
+    void setDstIPv4Address(const IPv4Address &ipAddr) const { getIPv4Header()->ipDst = ipAddr.toInt(); }
 
     /**
      * @return True if this packet is a fragment (in sense of IP fragmentation), false otherwise
@@ -587,12 +587,12 @@ namespace pcpp {
      *
      * Otherwise sets PayloadLayer
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return Size of sf_IPv4 common (including sf_IPv4 options if exist)
      */
-    size_t getHeaderLen() const {
+    size_t getHeaderLen() const override {
       return (size_t) ((uint16_t) (getIPv4Header()->internetHeaderLength) * 4) + m_TempHeaderExtension;
     }
 
@@ -603,11 +603,11 @@ namespace pcpp {
      * - iphdr#headerChecksum = calculated
      * - iphdr#protocol = calculated if next layer is known: ::PACKETPP_IPPROTO_TCP for TCP, ::PACKETPP_IPPROTO_UDP for UDP, ::PACKETPP_IPPROTO_ICMP for ICMP
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelNetworkLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelNetworkLayer; }
 
     /**
      * A static method that validates the input data
@@ -639,7 +639,7 @@ namespace pcpp {
   // implementation of inline methods
 
   bool IPv4Layer::isDataValid(const uint8_t *data, size_t dataLen) {
-    const iphdr *hdr = reinterpret_cast<const iphdr *>(data);
+    const auto *hdr = reinterpret_cast<const iphdr *>(data);
     return dataLen >= sizeof(iphdr) && hdr->ipVersion == 4 && hdr->internetHeaderLength >= 5;
   }
 

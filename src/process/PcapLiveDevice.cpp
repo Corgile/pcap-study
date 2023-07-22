@@ -31,6 +31,7 @@
 #include <Packet32.h>
 #include <ntddndis.h>
 #include <iphlpapi.h>
+
 #else
 
 #include <arpa/inet.h>
@@ -176,8 +177,9 @@ namespace pcpp {
       while (!m_StopThread)
         pcap_dispatch(m_PcapDescriptor, -1, onPacketArrives, (uint8_t *) this);
     } else {
-      while (!m_StopThread)
+      while (!m_StopThread) {
         pcap_dispatch(m_PcapDescriptor, 100, onPacketArrivesNoCallback, (uint8_t *) this);
+      }
     }
     PCPP_LOG_DEBUG("Ended capture thread for device '" << m_Name << "'");
   }
@@ -521,18 +523,9 @@ namespace pcpp {
     return true;
   }
 
-  bool PcapLiveDevice::sendPacket(RawPacket const &rawPacket, bool checkMtu) {
-    if (checkMtu) {
-      auto *rPacket = (RawPacket *) &rawPacket;
-      Packet parsedPacket = Packet(rPacket, OsiModelDataLinkLayer);
-      return sendPacket(&parsedPacket, true);
-    }
-    // Send packet without Mtu check
-    return sendPacket(((RawPacket &) rawPacket).getRawData(), ((RawPacket &) rawPacket).getRawDataLen());
-  }
-
   bool PcapLiveDevice::sendPacket(const uint8_t *packetData, int packetDataLength, int packetPayloadLength) {
-    return doMtuCheck(packetPayloadLength) && sendPacket(packetData, packetDataLength);
+    return doMtuCheck(packetPayloadLength) &&
+           sendPacket(packetData, packetDataLength, true, pcpp::LINKTYPE_ETHERNET);
   }
 
   bool PcapLiveDevice::sendPacket(const uint8_t *packetData, int packetDataLength, bool checkMtu,
@@ -551,7 +544,7 @@ namespace pcpp {
     }
 
     if (packetDataLength == 0) {
-      PCPP_LOG_ERROR("Trying to send a packet with length 0");
+      PCPP_LOG_ERROR("Don't try to send a packet with length 0");
       return false;
     }
 
@@ -567,7 +560,7 @@ namespace pcpp {
   bool PcapLiveDevice::sendPacket(Packet *packet, bool checkMtu) {
     RawPacket *rawPacket = packet->getRawPacket();
     if (checkMtu) {
-      int packetPayloadLength{};
+      int packetPayloadLength;
       switch (packet->getFirstLayer()->getOsiModelLayer()) {
         case (pcpp::OsiModelDataLinkLayer):
           packetPayloadLength = (int) packet->getFirstLayer()->getLayerPayloadSize();
@@ -582,6 +575,18 @@ namespace pcpp {
       return doMtuCheck(packetPayloadLength) && sendPacket(*rawPacket, false);
     }
     return sendPacket(*rawPacket, false);
+  }
+
+  bool PcapLiveDevice::sendPacket(RawPacket const &rawPacket, bool checkMtu) {
+    if (checkMtu) {
+      auto *rPacket = (RawPacket *) &rawPacket;
+      Packet parsedPacket = Packet(rPacket, OsiModelDataLinkLayer);
+      return sendPacket(&parsedPacket, true);
+    }
+    // Send packet without Mtu check
+    const uint8_t *packetDate{((RawPacket &) rawPacket).getRawData()};
+    int dataLen{((RawPacket &) rawPacket).getRawDataLen()};
+    return sendPacket(packetDate, dataLen);
   }
 
   int PcapLiveDevice::sendPackets(RawPacket *rawPacketsArr, int arrLength, bool checkMtu) {
@@ -608,7 +613,7 @@ namespace pcpp {
 
   int PcapLiveDevice::sendPackets(const RawPacketVector &rawPackets, bool checkMtu) {
     int packetsSent = 0;
-    for (auto rawPacket : rawPackets) {
+    for (auto rawPacket: rawPackets) {
       if (sendPacket(*rawPacket, checkMtu))
         packetsSent++;
     }
@@ -838,7 +843,7 @@ namespace pcpp {
   }
 
   IPv4Address PcapLiveDevice::getIPv4Address() const {
-    for (const auto & m_Addresse : m_Addresses) {
+    for (const auto &m_Addresse: m_Addresses) {
       if (Logger::getInstance().isDebugEnabled(PcapLogModuleLiveDevice) && m_Addresse.addr != nullptr) {
         char addrAsString[INET6_ADDRSTRLEN];
         internal::sockaddr2string(m_Addresse.addr, addrAsString);
@@ -858,7 +863,7 @@ namespace pcpp {
   }
 
   IPv6Address PcapLiveDevice::getIPv6Address() const {
-    for (const auto & m_Addresse : m_Addresses) {
+    for (const auto &m_Addresse: m_Addresses) {
       if (Logger::getInstance().isDebugEnabled(PcapLogModuleLiveDevice) && m_Addresse.addr != nullptr) {
         char addrAsString[INET6_ADDRSTRLEN];
         internal::sockaddr2string(m_Addresse.addr, addrAsString);

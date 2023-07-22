@@ -1,11 +1,11 @@
 #include <iostream>
 #include "PcapLiveDeviceList.h"
 #include "SystemUtils.h"
+
 /**
  * A struct for collecting packet statistics
  */
-struct PacketStats
-{
+struct PacketStats {
   int ethPacketCount;
   int ipv4PacketCount;
   int ipv6PacketCount;
@@ -19,7 +19,17 @@ struct PacketStats
   /**
    * Clear all stats
    */
-  void clear() { ethPacketCount = 0; ipv4PacketCount = 0; ipv6PacketCount = 0; tcpPacketCount = 0; udpPacketCount = 0; tcpPacketCount = 0; dnsPacketCount = 0; httpPacketCount = 0; sslPacketCount = 0; }
+  void clear() {
+    ethPacketCount = 0;
+    ipv4PacketCount = 0;
+    ipv6PacketCount = 0;
+    tcpPacketCount = 0;
+    udpPacketCount = 0;
+    tcpPacketCount = 0;
+    dnsPacketCount = 0;
+    httpPacketCount = 0;
+    sslPacketCount = 0;
+  }
 
   /**
    * C'tor
@@ -29,8 +39,7 @@ struct PacketStats
   /**
    * Collect stats from a packet
    */
-  void consumePacket(pcpp::Packet& packet)
-  {
+  void consumePacket(pcpp::Packet &packet) {
     if (packet.isPacketOfType(pcpp::Ethernet))
       ethPacketCount++;
     if (packet.isPacketOfType(pcpp::IPv4))
@@ -52,8 +61,7 @@ struct PacketStats
   /**
    * Print stats to console
    */
-  void printToConsole() const
-  {
+  void printToConsole() const {
     std::cout
         << "Ethernet packet count: " << ethPacketCount << std::endl
         << "IPv4 packet count:     " << ipv4PacketCount << std::endl
@@ -70,10 +78,9 @@ struct PacketStats
 /**
  * A callback function for the async capture which is called each time a packet is captured
  */
-static void onPacketArrives(pcpp::RawPacket* packet, [[maybe_unused]] pcpp::PcapLiveDevice* dev, void* cookie)
-{
+static void callback(pcpp::RawPacket *packet, [[maybe_unused]] pcpp::PcapLiveDevice *dev, void *cookie) {
   // extract the stats object form the cookie
-  auto* stats = (PacketStats*)cookie;
+  auto *stats = (PacketStats *) cookie;
 
   // parsed the raw packet
   pcpp::Packet parsedPacket(packet);
@@ -81,39 +88,17 @@ static void onPacketArrives(pcpp::RawPacket* packet, [[maybe_unused]] pcpp::Pcap
   // collect stats from packet
   stats->consumePacket(parsedPacket);
 }
-
-
-/**
- * a callback function for the blocking mode capture which is called each time a packet is captured
- */
-static bool onPacketArrivesBlockingMode(pcpp::RawPacket* packet, [[maybe_unused]] pcpp::PcapLiveDevice* dev, void* cookie)
-{
-  // extract the stats object form the cookie
-  auto* stats = (PacketStats*)cookie;
-
-  // parsed the raw packet
-  pcpp::Packet parsedPacket(packet);
-
-  // collect stats from packet
-  stats->consumePacket(parsedPacket);
-
-  // return false means we don't want to stop capturing after this callback
-  return false;
-}
-
 
 /**
  * main method of the application
  */
-int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
-{
+int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   // IPv4 address of the interface we want to sniff
-  std::string interfaceIPAddr = "192.168.8.184";
+  std::string interfaceIPAddr = "192.168.2.29";
 
   // find the interface by IP address
-  pcpp::PcapLiveDevice* dev = pcpp::PcapLiveDeviceList::getInstance().getPcapLiveDeviceByIp(interfaceIPAddr);
-  if (dev == nullptr)
-  {
+  pcpp::PcapLiveDevice *dev = pcpp::PcapLiveDeviceList::getInstance().getPcapLiveDeviceByIp(interfaceIPAddr);
+  if (dev == nullptr) {
     std::cerr << "Cannot find interface with IPv4 address of '" << interfaceIPAddr << "'" << std::endl;
     return 1;
   }
@@ -134,8 +119,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     std::cout << "   DNS server:            " << pcpp::PcapLiveDevice::getDnsServers().at(0) << std::endl;
 
   // open the device before start capturing/sending packets
-  if (!dev->open())
-  {
+  if (!dev->open()) {
     std::cerr << "Cannot open device" << std::endl;
     return 1;
   }
@@ -143,14 +127,15 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
   // create the stats object
   PacketStats stats;
 
-
+#define ASYNC
+#ifdef ASYNC
   // Async packet capture with a callback function
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  std::cout << std::endl << "Starting async capture..." << std::endl;
+  std::cout << std::endl << "开始异步抓包..." << std::endl;
 
   // start capture in async mode. Give a callback function to call to whenever a packet is captured and the stats object as the cookie
-  dev->startCapture(onPacketArrives, &stats);
+  dev->startCapture(callback, &stats);
 
   // sleep for 10 seconds in main thread, in the meantime packets are captured in the async thread
   pcpp::multiPlatformSleep(10);
@@ -164,8 +149,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 
   // clear stats
   stats.clear();
-
-
+#endif
+#ifdef CAPTURE_VECTOR
   // Capturing packets in a packet vector
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -184,8 +169,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
   dev->stopCapture();
 
   // go over the packet vector and feed all packets to the stats object
-  for (auto iter : packetVec)
-  {
+  for (auto iter: packetVec) {
     // parse raw packet
     pcpp::Packet parsedPacket(iter);
 
@@ -199,47 +183,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 
   // clear stats
   stats.clear();
+#endif
 
-
-  // Capturing packets in blocking mode
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  std::cout << std::endl << "Starting capture in blocking mode..." << std::endl;
-
-  // start capturing in blocking mode. Give a callback function to call to whenever a packet is captured, the stats object as the cookie and a 10 seconds timeout
-  dev->startCaptureBlockingMode(onPacketArrivesBlockingMode, &stats, 10);
-
-  // thread is blocked until capture is finished
-
-  // capture is finished, print results
-  std::cout << "Results:" << std::endl;
-  stats.printToConsole();
-
-  stats.clear();
-
-
-  // Sending single packets
-  // ~~~~~~~~~~~~~~~~~~~~~~
-
-  std::cout << std::endl << "Sending " << packetVec.size() << " packets one by one..." << std::endl;
-
-  // go over the vector of packets and send them one by one
-  for (auto iter : packetVec) {
-    // send the packet. If fails exit the application
-    if (!dev->sendPacket(*iter, true))
-    {
-      std::cerr << "Couldn't send packet" << std::endl;
-      return 1;
-    }
-  }
-  std::cout << packetVec.size() << " packets sent" << std::endl;
-
-
-  // Using filters
+#ifdef Using_filters
   // ~~~~~~~~~~~~~
 
   // create a filter instance to capture only traffic on port 80
-  pcpp::PortFilter portFilter(80, pcpp::SRC_OR_DST);
+  pcpp::PortFilter portFilter(443, pcpp::SRC_OR_DST);
 
   // create a filter instance to capture only TCP traffic
   pcpp::ProtoFilter protocolFilter(pcpp::TCP);
@@ -252,7 +202,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
   // set the filter on the device
   dev->setFilter(andFilter);
 
-  std::cout << std::endl << "Starting packet capture with a filter in place..." << std::endl;
+  std::cout << std::endl << "使用适当的过滤器开始数据包捕获" << std::endl;
 
   // start capture in async mode. Give a callback function to call to whenever a packet is captured and the stats object as the cookie
   dev->startCapture(onPacketArrives, &stats);
@@ -270,4 +220,5 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 
   // close the device before application ends
   dev->close();
+#endif
 }

@@ -47,7 +47,7 @@ namespace pcpp {
      */
     MplsLayer(uint32_t mplsLabel, uint8_t ttl, uint8_t experimentalUseValue, bool bottomOfStack);
 
-    virtual ~MplsLayer() {}
+    ~MplsLayer() override = default;
 
     /**
      * @return TTL value of the MPLS common
@@ -101,22 +101,22 @@ namespace pcpp {
     /**
      * Currently identifies the following next layers: IPv4Layer, IPv6Layer, MplsLayer. Otherwise sets PayloadLayer
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return Size of MPLS common (4 bytes)
      */
-    size_t getHeaderLen() const { return sizeof(mpls_header); }
+    size_t getHeaderLen() const override { return sizeof(mpls_header); }
 
     /**
      * Set/unset the bottom-of-stack bit according to next layer: if it's a MPLS layer then bottom-of-stack will be unset. If it's not a
      * MPLS layer this bit will be set
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelNetworkLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelNetworkLayer; }
   };
 
 } // namespace pcpp

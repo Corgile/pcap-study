@@ -56,9 +56,9 @@ namespace pcpp {
      * @param[in] priority Priority value
      * @param[in] etherType Protocol EtherType of the next layer. It's an optional parameter, a value of 0 will be set if not provided
      */
-    VlanLayer(const uint16_t vlanID, bool cfi, uint8_t priority, uint16_t etherType = 0);
+    VlanLayer(uint16_t vlanID, bool cfi, uint8_t priority, uint16_t etherType = 0);
 
-    ~VlanLayer() {}
+    ~VlanLayer() override = default;
 
     /**
      * Get a pointer to the VLAN common. Notice this points directly to the data, so every change will change the actual packet data
@@ -113,21 +113,21 @@ namespace pcpp {
     /**
      * Currently identifies the following next layers: IPv4Layer, IPv6Layer, ArpLayer, VlanLayer, MplsLayer. Otherwise sets PayloadLayer
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return Size of vlan_header
      */
-    size_t getHeaderLen() const { return sizeof(vlan_header); }
+    size_t getHeaderLen() const override { return sizeof(vlan_header); }
 
     /**
      * Calculate the EtherType for known protocols: IPv4, IPv6, ARP, VLAN
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelDataLinkLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelDataLinkLayer; }
   };
 
 } // namespace pcpp

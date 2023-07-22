@@ -107,12 +107,12 @@ namespace pcpp {
      * holds the reference to a data buffer. This option can be used to reduce the number of copies to generate packets.
      */
     SomeIpLayer(uint16_t serviceID, uint16_t methodID, uint16_t clientID, uint16_t sessionID, uint8_t interfaceVersion,
-                MsgType type, uint8_t returnCode, const uint8_t *const data = nullptr, size_t dataLen = 0);
+                MsgType type, uint8_t returnCode, const uint8_t *data = nullptr, size_t dataLen = 0);
 
     /**
      * Destroy the layer object
      */
-    ~SomeIpLayer() {}
+    ~SomeIpLayer() override = default;
 
     /**
      * A static method that creates a SOME/IP or SOME/IP-TP layer from packet raw data. Returns PayloadLayer if data is
@@ -315,27 +315,27 @@ namespace pcpp {
      * Get the Length of the SOME/IP common inc payload
      * @return size_t
      */
-    size_t getHeaderLen() const { return sizeof(uint32_t) * 2 + getLengthField(); }
+    size_t getHeaderLen() const override { return sizeof(uint32_t) * 2 + getLengthField(); }
 
     /**
      * Does nothing for this layer
      */
-    virtual void computeCalculateFields() {}
+    void computeCalculateFields() override {}
 
     /**
      * Identifies the following next layers: SomeIpLayer, SomeIpTpLayer, SomeIpSdLayer. Otherwise sets PayloadLayer
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return The string representation of the SOME/IP layer
      */
-    virtual std::string toString() const;
+    std::string toString() const override;
 
     /**
      * @return The OSI model layer of this layer
      */
-    OsiModelLayer getOsiModelLayer() const { return OsiModelApplicationLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelApplicationLayer; }
 
   protected:
     SomeIpLayer() {}
@@ -393,12 +393,12 @@ namespace pcpp {
      */
     SomeIpTpLayer(uint16_t serviceID, uint16_t methodID, uint16_t clientID, uint16_t sessionID,
                   uint8_t interfaceVersion, MsgType type, uint8_t returnCode, uint32_t offset, bool moreSegmentsFlag,
-                  const uint8_t *const data = nullptr, size_t dataLen = 0);
+                  const uint8_t *data = nullptr, size_t dataLen = 0);
 
     /**
      * Destroy the layer object
      */
-    ~SomeIpTpLayer() {}
+    ~SomeIpTpLayer() override = default;
 
     /**
      * Get a pointer to the basic SOME/IP-TP common. Notice this points directly to the data, so every change will
@@ -435,18 +435,18 @@ namespace pcpp {
     /**
      * Sets the message type in this layer with enabling the TP flag
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
 
     /**
      * @return The string representation of the SOME/IP-TP layer
      */
-    std::string toString() const;
+    std::string toString() const override;
 
   private:
     static const uint32_t SOMEIP_TP_MORE_FLAG_MASK = 0x01;
     static const uint32_t SOMEIP_TP_OFFSET_MASK = 0xFFFFFFF0;
 
-    size_t getSomeIpHeaderLen() const { return sizeof(someiptphdr); }
+    size_t getSomeIpHeaderLen() const override { return sizeof(someiptphdr); }
 
     static uint8_t setTpFlag(uint8_t messageType);
   };

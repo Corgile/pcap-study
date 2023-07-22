@@ -5,7 +5,7 @@
 #include "osi/TLVData.h"
 #include "IpAddress.h"
 #include "MacAddress.h"
-#include <string.h>
+#include <cstring>
 
 /// @file
 
@@ -405,7 +405,7 @@ namespace pcpp {
     /**
      * A d'tor for this class, currently does nothing
      */
-    virtual ~DhcpOption() {}
+    ~DhcpOption() override = default;
 
     /**
      * Retrieve DHCP option data as IPv4 address. Relevant only if option value is indeed an sf_IPv4 address
@@ -435,9 +435,10 @@ namespace pcpp {
      */
     std::string getValueAsString(int valueOffset = 0) const {
       if (m_Data == nullptr || m_Data->recordLen - valueOffset < 1)
-        return "";
+        return {};
 
-      return std::string((const char *) m_Data->recordValue + valueOffset, (int) m_Data->recordLen - valueOffset);
+      size_t count = m_Data->recordLen - valueOffset;
+      return {(const char *) m_Data->recordValue + valueOffset, count};
     }
 
     /**
@@ -462,7 +463,7 @@ namespace pcpp {
 
     // implement abstract methods
 
-    size_t getTotalSize() const {
+    size_t getTotalSize() const override {
       if (m_Data == nullptr)
         return 0;
 
@@ -472,7 +473,7 @@ namespace pcpp {
       return sizeof(uint8_t) * 2 + (size_t) m_Data->recordLen;
     }
 
-    size_t getDataSize() const {
+    size_t getDataSize() const override {
       if (m_Data == nullptr)
         return 0;
 
@@ -604,7 +605,7 @@ namespace pcpp {
     /**
      * A destructor for this layer
      */
-    virtual ~DhcpLayer() {}
+    ~DhcpLayer() override = default;
 
     /**
      * Get a pointer to the DHCP common. Notice this points directly to the data, so every change will change the actual packet data
@@ -626,7 +627,7 @@ namespace pcpp {
      * Set the client sf_IPv4 address in dhcp_header#clientIpAddress
      * @param[in] addr The sf_IPv4 address to set
      */
-    void setClientIpAddress(const IPv4Address &addr) { getDhcpHeader()->clientIpAddress = addr.toInt(); }
+    void setClientIpAddress(const IPv4Address &addr) const { getDhcpHeader()->clientIpAddress = addr.toInt(); }
 
     /**
      * @return The server sf_IPv4 address (as extracted from dhcp_header#serverIpAddress converted to IPv4Address object)
@@ -637,7 +638,7 @@ namespace pcpp {
      * Set the server sf_IPv4 address in dhcp_header#serverIpAddress
      * @param[in] addr The sf_IPv4 address to set
      */
-    void setServerIpAddress(const IPv4Address &addr) { getDhcpHeader()->serverIpAddress = addr.toInt(); }
+    void setServerIpAddress(const IPv4Address &addr) const { getDhcpHeader()->serverIpAddress = addr.toInt(); }
 
     /**
      * @return Your sf_IPv4 address (as extracted from dhcp_header#yourIpAddress converted to IPv4Address object)
@@ -648,7 +649,7 @@ namespace pcpp {
      * Set your sf_IPv4 address in dhcp_header#yourIpAddress
      * @param[in] addr The sf_IPv4 address to set
      */
-    void setYourIpAddress(const IPv4Address &addr) { getDhcpHeader()->yourIpAddress = addr.toInt(); }
+    void setYourIpAddress(const IPv4Address &addr) const { getDhcpHeader()->yourIpAddress = addr.toInt(); }
 
     /**
      * @return Gateway sf_IPv4 address (as extracted from dhcp_header#gatewayIpAddress converted to IPv4Address object)
@@ -659,7 +660,7 @@ namespace pcpp {
      * Set the gateway sf_IPv4 address in dhcp_header#gatewayIpAddress
      * @param[in] addr The sf_IPv4 address to set
      */
-    void setGatewayIpAddress(const IPv4Address &addr) { getDhcpHeader()->gatewayIpAddress = addr.toInt(); }
+    void setGatewayIpAddress(const IPv4Address &addr) const { getDhcpHeader()->gatewayIpAddress = addr.toInt(); }
 
     /**
      * @return The client MAC address as extracted from dhcp_header#clientHardwareAddress, assuming dhcp_header#hardwareType is 1 (Ethernet)
@@ -753,12 +754,12 @@ namespace pcpp {
     /**
      * Does nothing for this layer (DhcpLayer is always last)
      */
-    void parseNextLayer() {}
+    void parseNextLayer() override {}
 
     /**
      * @return The size of @ref dhcp_header + size of options
      */
-    size_t getHeaderLen() const { return m_DataLen; }
+    size_t getHeaderLen() const override { return m_DataLen; }
 
     /**
      * Calculate the following fields:
@@ -769,11 +770,11 @@ namespace pcpp {
      * - @ref dhcp_header#hardwareType = 1 (Ethernet)
      * - @ref dhcp_header#hardwareAddressLength = 6 (MAC address length)
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelApplicationLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelApplicationLayer; }
 
   private:
 

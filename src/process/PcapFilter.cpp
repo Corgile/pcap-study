@@ -5,12 +5,6 @@
 #include "osi/l3-network/IPv4Layer.h"
 #include <sstream>
 
-#if defined(_WIN32)
-
-#include <winsock2.h>
-
-#endif
-
 #include "pcap.h"
 #include "RawPacket.h"
 #include "TimespecTimeval.h"
@@ -50,7 +44,7 @@ namespace pcpp {
         return false;
       }
 
-      bpf_program *newProg = new bpf_program;
+      auto *newProg = new bpf_program;
       int ret = pcap_compile(pcap, newProg, filter.c_str(), 1, 0);
       pcap_close(pcap);
       if (ret < 0) {
@@ -109,13 +103,13 @@ namespace pcpp {
   void IFilterWithDirection::parseDirection(std::string &directionAsString) {
     switch (m_Dir) {
       case SRC:
-        directionAsString = "common";
+        directionAsString = "src";
         break;
       case DST:
         directionAsString = "dst";
         break;
       default: //SRC_OR_DST:
-        directionAsString = "common or dst";
+        directionAsString = "src or dst";
         break;
     }
   }
@@ -177,7 +171,7 @@ namespace pcpp {
 
     // The following code lines verify IP address is valid (IPv4 or IPv6)
 
-    IPAddress ipAddr = IPAddress(ipAddrmodified);
+    IPAddress ipAddr{ipAddrmodified};
     if (!ipAddr.isValid()) {
       PCPP_LOG_ERROR("Invalid IP address '" << ipAddrmodified << "', setting len to zero");
       return;
@@ -199,7 +193,7 @@ namespace pcpp {
     convertToIPAddressWithLen(ipAddr);
     parseDirection(dir);
     result = "ip and " + dir + " net " + ipAddr;
-    if (m_IPv4Mask != "")
+    if (!m_IPv4Mask.empty())
       result += " mask " + mask;
     else if (m_Len > 0) {
       std::ostringstream stream;
@@ -266,7 +260,7 @@ namespace pcpp {
   }
 
   AndFilter::AndFilter(std::vector<GeneralFilter *> &filters) {
-    for (std::vector<GeneralFilter *>::iterator it = filters.begin(); it != filters.end(); ++it) {
+    for (auto it = filters.begin(); it != filters.end(); ++it) {
       m_FilterList.push_back(*it);
     }
   }
@@ -274,14 +268,14 @@ namespace pcpp {
   void AndFilter::setFilters(std::vector<GeneralFilter *> &filters) {
     m_FilterList.clear();
 
-    for (std::vector<GeneralFilter *>::iterator it = filters.begin(); it != filters.end(); ++it) {
+    for (auto it = filters.begin(); it != filters.end(); ++it) {
       m_FilterList.push_back(*it);
     }
   }
 
   void AndFilter::parseToString(std::string &result) {
     result.clear();
-    for (std::vector<GeneralFilter *>::iterator it = m_FilterList.begin(); it != m_FilterList.end(); ++it) {
+    for (auto it = m_FilterList.begin(); it != m_FilterList.end(); ++it) {
       std::string innerFilter;
       (*it)->parseToString(innerFilter);
       result += '(' + innerFilter + ')';
@@ -292,14 +286,14 @@ namespace pcpp {
   }
 
   OrFilter::OrFilter(std::vector<GeneralFilter *> &filters) {
-    for (std::vector<GeneralFilter *>::iterator it = filters.begin(); it != filters.end(); ++it) {
+    for (auto it = filters.begin(); it != filters.end(); ++it) {
       m_FilterList.push_back(*it);
     }
   }
 
   void OrFilter::parseToString(std::string &result) {
     result.clear();
-    for (std::vector<GeneralFilter *>::iterator it = m_FilterList.begin(); it != m_FilterList.end(); ++it) {
+    for (auto it = m_FilterList.begin(); it != m_FilterList.end(); ++it) {
       std::string innerFilter;
       (*it)->parseToString(innerFilter);
       result += '(' + innerFilter + ')';

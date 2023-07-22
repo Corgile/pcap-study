@@ -98,14 +98,14 @@ namespace pcpp {
      * Several SSH records can reside in a single packets. This method examins the remaining data and creates additional
      * SSH records if applicable
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * Does nothing for this layer
      */
-    void computeCalculateFields() {}
+    void computeCalculateFields() override {}
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelApplicationLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelApplicationLayer; }
 
   protected:
     // protected constructor, this class cannot be instantiated
@@ -149,9 +149,9 @@ namespace pcpp {
     /**
      * @return The size of the identification message
      */
-    size_t getHeaderLen() const { return m_DataLen; }
+    size_t getHeaderLen() const override { return m_DataLen; }
 
-    std::string toString() const;
+    std::string toString() const override;
 
   private:
     // this layer supports only parsing
@@ -254,9 +254,9 @@ namespace pcpp {
     /**
      * @return The size of the SSH handshake message including the padding and message common
      */
-    size_t getHeaderLen() const;
+    size_t getHeaderLen() const override;
 
-    std::string toString() const;
+    std::string toString() const override;
 
   protected:
 
@@ -418,9 +418,9 @@ namespace pcpp {
     /**
      * @return The size of the message which is equal to the size of the layer
      */
-    size_t getHeaderLen() const { return m_DataLen; }
+    size_t getHeaderLen() const override { return m_DataLen; }
 
-    std::string toString() const;
+    std::string toString() const override;
   };
 
 }

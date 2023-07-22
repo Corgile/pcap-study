@@ -35,6 +35,13 @@ add_subdirectory(src/headers)
 add_subdirectory(src/process)
 add_subdirectory(src/vendor)
 
+if (MSVC)
+    # Disable Visual Studio warnings: Unknown pragma (4068), Zero-sized array in struct/union (4200), Possible loss of data (4244),
+    # Possible loss of data (4267), Character may not be represented (4819)
+    # GCC "未知杂注"警告
+    add_definitions("/utf-8")
+endif ()
+
 add_executable(${target} main.cpp)
 
 # target_link_libraries() 里面必须使用倒序，越基础的库越往后放 否则一堆undefined

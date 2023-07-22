@@ -61,7 +61,7 @@ namespace pcpp {
      */
     EthDot3Layer(const MacAddress &sourceMac, const MacAddress &destMac, uint16_t length);
 
-    ~EthDot3Layer() {}
+    ~EthDot3Layer() override = default;
 
     /**
      * Get a pointer to the Ethernet common. Notice this points directly to the data, so every change will change the actual packet data
@@ -73,46 +73,46 @@ namespace pcpp {
      * Get the source MAC address
      * @return The source MAC address
      */
-    MacAddress getSourceMac() const { return MacAddress(getEthHeader()->srcMac); }
+    MacAddress getSourceMac() const { return {getEthHeader()->srcMac}; }
 
     /**
      * Set source MAC address
      * @param sourceMac Source MAC to set
      */
-    void setSourceMac(const MacAddress &sourceMac) { sourceMac.copyTo(getEthHeader()->srcMac); }
+    void setSourceMac(const MacAddress &sourceMac) const { sourceMac.copyTo(getEthHeader()->srcMac); }
 
     /**
      * Get the destination MAC address
      * @return The destination MAC address
      */
-    MacAddress getDestMac() const { return MacAddress(getEthHeader()->dstMac); }
+    MacAddress getDestMac() const { return {getEthHeader()->dstMac}; }
 
     /**
      * Set destination MAC address
      * @param destMac Destination MAC to set
      */
-    void setDestMac(const MacAddress &destMac) { destMac.copyTo(getEthHeader()->dstMac); }
+    void setDestMac(const MacAddress &destMac) const { destMac.copyTo(getEthHeader()->dstMac); }
 
     // implement abstract methods
 
     /**
      * Parses next layer
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return Size of ether_dot3_header
      */
-    size_t getHeaderLen() const { return sizeof(ether_dot3_header); }
+    size_t getHeaderLen() const override { return sizeof(ether_dot3_header); }
 
     /**
      * Does nothing for this layer
      */
-    void computeCalculateFields() {}
+    void computeCalculateFields() override {}
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelDataLinkLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelDataLinkLayer; }
 
     /**
      * A static method that validates the input data

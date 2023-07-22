@@ -273,7 +273,7 @@ namespace pcpp {
      * @return A pointer to the layer of the requested type, NULL if not found
      */
     template<class TLayer>
-    TLayer *getNextLayerOfType(AbstractLayer *startLayer) const;
+    TLayer *getNextLayerOfType(AbstractLayer *curLayer) const;
 
     /**
      * A templated method to get the first layer of a certain type (protocol), start searching from a certain layer.
@@ -284,7 +284,7 @@ namespace pcpp {
      * @return A pointer to the layer of the requested type, NULL if not found
      */
     template<class TLayer>
-    TLayer *getPrevLayerOfType(AbstractLayer *startLayer) const;
+    TLayer *getPrevLayerOfType(AbstractLayer *curLayer) const;
 
     /**
      * Check whether the packet contains a certain protocol
@@ -353,11 +353,11 @@ namespace pcpp {
 
   template<class TLayer>
   TLayer *Packet::getNextLayerOfType(AbstractLayer *curLayer) const {
-    if (curLayer == NULL)
+    if (curLayer == nullptr)
       return NULL;
 
     curLayer = curLayer->getNextLayer();
-    while ((curLayer != NULL) && (dynamic_cast<TLayer *>(curLayer) == NULL)) {
+    while ((curLayer != nullptr) && (dynamic_cast<TLayer *>(curLayer) == NULL)) {
       curLayer = curLayer->getNextLayer();
     }
 

@@ -568,7 +568,7 @@ namespace pcpp {
     uint32_t m_NetworkPrefix;
     uint32_t m_Mask;
 
-    bool isValidNetmask(const std::string &netmask);
+    static bool isValidNetmask(const std::string &netmask);
 
     void initFromAddressAndPrefixLength(const IPv4Address &address, uint8_t prefixLen);
 
@@ -672,7 +672,7 @@ namespace pcpp {
     uint8_t m_NetworkPrefix[16];
     uint8_t m_Mask[16];
 
-    bool isValidNetmask(const std::string &netmask);
+    static bool isValidNetmask(const std::string &netmask);
 
     void initFromAddressAndPrefixLength(const IPv6Address &address, uint8_t prefixLen);
 

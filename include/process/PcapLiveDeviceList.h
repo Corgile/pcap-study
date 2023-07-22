@@ -93,7 +93,7 @@ namespace pcpp {
      * @param[in] ipOrName An IP address or name of the interface
      * @return A pointer to the live device if exists, NULL otherwise
      */
-    PcapLiveDevice *getPcapLiveDeviceByIpOrName(const std::string &ipOrName) const;
+    static PcapLiveDevice *getPcapLiveDeviceByIpOrName(const std::string &ipOrName) ;
 
     /**
      * @return A list of all DNS servers defined for this machine. If this list is empty it means no DNS servers were defined or they
@@ -105,7 +105,7 @@ namespace pcpp {
      * Copies the current live device list
      * @return A pointer to the cloned device list
      */
-    PcapLiveDeviceList *clone();
+    static PcapLiveDeviceList *clone();
 
     /**
      * Reset the live device list and DNS server list, meaning clear and refetch them

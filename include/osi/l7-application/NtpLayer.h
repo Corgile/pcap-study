@@ -585,7 +585,7 @@ namespace pcpp {
      * @param[in] val Value in NTP short format
      * @return Value in seconds from Unix Epoch (1 Jan 1970)
      */
-    static double convertFromShortFormat(const uint32_t val);
+    static double convertFromShortFormat(uint32_t val);
 
     /**
      * Convert NTP timestamp format to seconds from the Unix Epoch
@@ -593,7 +593,7 @@ namespace pcpp {
      * @param[in] val Value in NTP timestamp format
      * @return Value in seconds from Unix Epoch (1 Jan 1970)
      */
-    static double convertFromTimestampFormat(const uint64_t val);
+    static double convertFromTimestampFormat(uint64_t val);
 
     /**
      * Convert seconds from the Unix Epoch to NTP short format
@@ -601,7 +601,7 @@ namespace pcpp {
      * @param[in] val Value in seconds from Unix Epoch (1 Jan 1970)
      * @return Value in NTP short format
      */
-    static uint32_t convertToShortFormat(const double val);
+    static uint32_t convertToShortFormat(double val);
 
     /**
      * Convert seconds from the Unix Epoch to NTP timestamp format
@@ -609,21 +609,21 @@ namespace pcpp {
      * @param[in] val Value in seconds from Unix Epoch (1 Jan 1970)
      * @return Value in NTP timestamp format
      */
-    static uint64_t convertToTimestampFormat(const double val);
+    static uint64_t convertToTimestampFormat(double val);
 
     /**
      * A static method to convert timestamp value to ISO8601 date time format
      * @param[in] timestamp Value in seconds from the Unix Epoch
      * @return std::string ISO8601 formatted string
      */
-    static std::string convertToIsoFormat(const double timestamp);
+    static std::string convertToIsoFormat(double timestamp);
 
     /**
      * A static method to convert timestamp value to ISO8601 date time format
      * @param[in] timestampInNTPformat Value in NTP timestamp format
      * @return std::string ISO8601 formatted string
      */
-    static std::string convertToIsoFormat(const uint64_t timestampInNTPformat);
+    static std::string convertToIsoFormat(uint64_t timestampInNTPformat);
 
     /**
  * A static method that takes a byte array and detects whether it is a NTP message
@@ -642,25 +642,25 @@ namespace pcpp {
     // overridden methods
 
     /// Parses the next layer. NTP is the always last so does nothing for this layer
-    void parseNextLayer() {}
+    void parseNextLayer() override {}
 
     /**
      * @return Get the size of the layer (Including the extension and authentication fields if exists)
      */
-    size_t getHeaderLen() const { return m_DataLen; }
+    size_t getHeaderLen() const override { return m_DataLen; }
 
     /// Does nothing for this layer
-    void computeCalculateFields() {}
+    void computeCalculateFields() override {}
 
     /**
      * @return The OSI layer level of NTP (Application AbstractLayer).
      */
-    OsiModelLayer getOsiModelLayer() const { return OsiModelApplicationLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelApplicationLayer; }
 
     /**
      * @return Returns the protocol info as readable string
      */
-    std::string toString() const;
+    std::string toString() const override;
   };
 
 } // namespace pcpp

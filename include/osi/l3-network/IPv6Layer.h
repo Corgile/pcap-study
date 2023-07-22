@@ -82,7 +82,7 @@ namespace pcpp {
     /**
      * A destructor for this layer
      */
-    ~IPv6Layer();
+    ~IPv6Layer() override;
 
     /**
      * An assignment operator that first delete all data from current layer and then copy the entire common from the other IPv6Layer (including IPv6 extensions)
@@ -100,7 +100,7 @@ namespace pcpp {
      * but adds a level of abstraction because IPAddress can be used for both IPv4 and IPv6 addresses
      * @return An IPAddress containing the source address
      */
-    IPAddress getSrcIPAddress() const { return getSrcIPv6Address(); }
+    IPAddress getSrcIPAddress() const override { return getSrcIPv6Address(); }
 
     /**
      * Get the source IP address in the form of IPv6Address
@@ -112,21 +112,21 @@ namespace pcpp {
      * Set the source IP address
      * @param[in] ipAddr The IP address to set
      */
-    void setSrcIPv6Address(const IPv6Address &ipAddr) { ipAddr.copyTo(getIPv6Header()->ipSrc); }
+    void setSrcIPv6Address(const IPv6Address &ipAddr) const { ipAddr.copyTo(getIPv6Header()->ipSrc); }
 
 
     /**
      * Set the dest IP address
      * @param[in] ipAddr The IP address to set
      */
-    void setDstIPv6Address(const IPv6Address &ipAddr) { ipAddr.copyTo(getIPv6Header()->ipDst); }
+    void setDstIPv6Address(const IPv6Address &ipAddr) const { ipAddr.copyTo(getIPv6Header()->ipDst); }
 
     /**
      * Get the destination IP address in the form of IPAddress. This method is very similar to getDstIPv6Address(),
      * but adds a level of abstraction because IPAddress can be used for both IPv4 and IPv6 addresses
      * @return An IPAddress containing the destination address
      */
-    IPAddress getDstIPAddress() const { return getDstIPv6Address(); }
+    IPAddress getDstIPAddress() const override { return getDstIPv6Address(); }
 
     /**
      * Get the destination IP address in the form of IPv6Address
@@ -192,12 +192,12 @@ namespace pcpp {
      *
      * Otherwise sets PayloadLayer
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return Size of @ref ip6_hdr
      */
-    size_t getHeaderLen() const { return sizeof(ip6_hdr) + m_ExtensionsLen; }
+    size_t getHeaderLen() const override { return sizeof(ip6_hdr) + m_ExtensionsLen; }
 
     /**
      * Calculate the following fields:
@@ -205,11 +205,11 @@ namespace pcpp {
      * - ip6_hdr#ipVersion = 6
      * - ip6_hdr#nextHeader = calculated if next layer is known: ::PACKETPP_IPPROTO_TCP for TCP, ::PACKETPP_IPPROTO_UDP for UDP, ::PACKETPP_IPPROTO_ICMP for ICMP
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelNetworkLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelNetworkLayer; }
 
   private:
     void initLayer();
@@ -227,7 +227,7 @@ namespace pcpp {
   template<class TIPv6Extension>
   TIPv6Extension *IPv6Layer::getExtensionOfType() const {
     IPv6Extension *curExt = m_FirstExtension;
-    while (curExt != NULL && dynamic_cast<TIPv6Extension *>(curExt) == NULL)
+    while (curExt != nullptr && dynamic_cast<TIPv6Extension *>(curExt) == NULL)
       curExt = curExt->getNextHeader();
 
     return (TIPv6Extension *) curExt;
@@ -240,10 +240,10 @@ namespace pcpp {
       return NULL;
     }
 
-    TIPv6Extension *newHeader = new TIPv6Extension(this, (size_t) offsetToAddHeader);
+    auto *newHeader = new TIPv6Extension(this, (size_t) offsetToAddHeader);
     (*newHeader) = extensionHeader;
 
-    if (m_FirstExtension != NULL) {
+    if (m_FirstExtension != nullptr) {
       newHeader->getBaseHeader()->nextHeader = m_LastExtension->getBaseHeader()->nextHeader;
       m_LastExtension->getBaseHeader()->nextHeader = newHeader->getExtensionType();
       m_LastExtension->setNextHeader(newHeader);

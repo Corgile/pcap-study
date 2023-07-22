@@ -120,6 +120,7 @@ namespace pcpp {
 
     void initStdFields(OptionType type);
 
+  public:
     SomeIpSdOption(const SomeIpSdOption &) = delete;
 
     SomeIpSdOption &operator=(const SomeIpSdOption &) = delete;
@@ -475,7 +476,7 @@ namespace pcpp {
      * Get the Length of the SomeIpSd Entry
      * @return size_t
      */
-    size_t getLength() const { return sizeof(someipsdhdrentry); }
+    static size_t getLength() { return sizeof(someipsdhdrentry); }
 
     /**
      * Get the number of Options of this Entry
@@ -590,11 +591,11 @@ namespace pcpp {
 
     void initStdFields(EntryType type, uint16_t serviceID, uint16_t instanceID, uint8_t majorVersion, uint32_t TTL);
 
-    SomeIpSdEntry(const SomeIpSdEntry &) = delete;
-
+    static const uint32_t SOMEIPSD_HDR_ENTRY_MASK_TTL = 0x00FFFFFF;
+  public:
     SomeIpSdEntry &operator=(const SomeIpSdEntry &) = delete;
 
-    static const uint32_t SOMEIPSD_HDR_ENTRY_MASK_TTL = 0x00FFFFFF;
+    SomeIpSdEntry(const SomeIpSdEntry &) = delete;
   };
 
   /**
@@ -636,7 +637,7 @@ namespace pcpp {
     /**
      * Destroy the layer object
      */
-    ~SomeIpSdLayer() {}
+    ~SomeIpSdLayer() override = default;
 
     /**
      * Checks if given port is a SOME/IP-SD protocol port
@@ -716,12 +717,12 @@ namespace pcpp {
     /**
      * Does nothing for this layer
      */
-    void computeCalculateFields() {};
+    void computeCalculateFields() override {};
 
     /**
      * @return The string representation of the SOME/IP-SD layer
      */
-    std::string toString() const;
+    std::string toString() const override;
 
   private:
     /**

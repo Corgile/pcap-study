@@ -5,7 +5,8 @@
 #include "IpAddress.h"
 #include <memory>
 #include <string>
-#include <stdint.h>
+#include <cstdint>
+#include <utility>
 
 /// @file
 
@@ -52,7 +53,7 @@ namespace pcpp {
     /**
      * A virtual d'tor, does nothing
      */
-    virtual ~IDnsResourceData() {}
+    virtual ~IDnsResourceData() = default;
 
     /**
      * A templated method which takes a class that derives from IDnsResourceData as the template argument and
@@ -147,11 +148,11 @@ namespace pcpp {
      * to set the DNS RR data as 'my.subdomain.yahoo.com' you may use the following string: 'my.subdomain.#12'.
      * This will result in writing 'my.subdomain' and a pointer to offset 12
      */
-    explicit StringDnsResourceData(const std::string &data) : m_Data(data) {}
+    explicit StringDnsResourceData(std::string data) : m_Data(std::move(data)) {}
 
     StringDnsResourceData(const uint8_t *dataPtr, size_t dataLen, IDnsResource *dnsResource);
 
-    ~StringDnsResourceData() {}
+    ~StringDnsResourceData() override = default;
 
     /**
      * Equality operator overload for this class that compares the strings stored in each object
@@ -162,9 +163,9 @@ namespace pcpp {
 
     // implement abstract methods
 
-    std::string toString() const { return m_Data; }
+    std::string toString() const override { return m_Data; }
 
-    bool toByteArr(uint8_t *arr, size_t &arrLength, IDnsResource *dnsResource) const;
+    bool toByteArr(uint8_t *arr, size_t &arrLength, IDnsResource *dnsResource) const override;
   };
 
 
@@ -211,9 +212,9 @@ namespace pcpp {
 
     // implement abstract methods
 
-    std::string toString() const { return m_Data.toString(); }
+    std::string toString() const override { return m_Data.toString(); }
 
-    bool toByteArr(uint8_t *arr, size_t &arrLength, IDnsResource *dnsResource) const;
+    bool toByteArr(uint8_t *arr, size_t &arrLength, IDnsResource *dnsResource) const override;
   };
 
 
@@ -260,9 +261,9 @@ namespace pcpp {
 
     // implement abstract methods
 
-    std::string toString() const { return m_Data.toString(); }
+    std::string toString() const override { return m_Data.toString(); }
 
-    bool toByteArr(uint8_t *arr, size_t &arrLength, IDnsResource *dnsResource) const;
+    bool toByteArr(uint8_t *arr, size_t &arrLength, IDnsResource *dnsResource) const override;
   };
 
 
@@ -304,7 +305,7 @@ namespace pcpp {
      */
     MxDnsResourceData(const uint16_t &preference, const std::string &mailExchange);
 
-    ~MxDnsResourceData() {}
+    ~MxDnsResourceData() override = default;
 
     /**
      * Equality operator overload for this class that compares the MX data stored in each object
@@ -332,9 +333,9 @@ namespace pcpp {
      * A string representation of the MX data stored in this object. The string format is as follows:
      * 'pref: {preference_value}; mx: {mail_exchange_hostname_value}'
      */
-    std::string toString() const;
+    std::string toString() const override;
 
-    bool toByteArr(uint8_t *arr, size_t &arrLength, IDnsResource *dnsResource) const;
+    bool toByteArr(uint8_t *arr, size_t &arrLength, IDnsResource *dnsResource) const override;
 
   private:
     MxData m_Data;
@@ -373,7 +374,7 @@ namespace pcpp {
      */
     GenericDnsResourceData(const GenericDnsResourceData &other);
 
-    ~GenericDnsResourceData() { if (m_Data != NULL) delete[] m_Data; }
+    ~GenericDnsResourceData() override { delete[] m_Data; }
 
     GenericDnsResourceData &operator=(const GenericDnsResourceData &other);
 
@@ -386,9 +387,9 @@ namespace pcpp {
 
     // implement abstract methods
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    bool toByteArr(uint8_t *arr, size_t &arrLength, IDnsResource *dnsResource) const;
+    bool toByteArr(uint8_t *arr, size_t &arrLength, IDnsResource *dnsResource) const override;
   };
 
 }

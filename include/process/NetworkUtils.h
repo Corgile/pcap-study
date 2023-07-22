@@ -17,7 +17,7 @@ namespace pcpp {
   /**
    * @class NetworkUtils
    * This class bundles several network utilities that are very common and useful. These utilities use osi7 and Packet++ packet
-   * crafting and processing capabilities. This class is a singleton and can be access by getInstance() only
+   * crafting and processing capabilities. This class is a singleton and can be access by globalInstance() only
    */
   class NetworkUtils {
   public:

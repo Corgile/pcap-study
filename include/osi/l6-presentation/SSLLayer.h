@@ -240,19 +240,20 @@ namespace pcpp {
     /**
      * @return The record size as extracted from the record data (in ssl_tls_record_layer#length)
      */
-    size_t getHeaderLen() const;
+    size_t getHeaderLen() const override;
 
     /**
      * Several SSL/TLS records can reside in a single packets. So this method checks the remaining data and if it's
      * identified as SSL/TLS it creates another SSL/TLS record layer as the next layer
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelPresentationLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelPresentationLayer; }
 
   protected:
-    SSLLayer(uint8_t *data, size_t dataLen, AbstractLayer *prevLayer, Packet *packet) : AbstractLayer(data, dataLen, prevLayer,
-                                                                                      packet) { m_Protocol = SSL; }
+    SSLLayer(uint8_t *data, size_t dataLen, AbstractLayer *prevLayer, Packet *packet) : AbstractLayer(data, dataLen,
+                                                                                                      prevLayer,
+                                                                                                      packet) { m_Protocol = SSL; }
 
   }; // class SSLLayer
 
@@ -350,12 +351,12 @@ namespace pcpp {
 
     // implement abstract methods
 
-    std::string toString() const;
+    std::string toString() const override;
 
     /**
      * There are no calculated fields for this layer
      */
-    void computeCalculateFields() {}
+    void computeCalculateFields() override {}
 
   private:
     PointerVector<SSLHandshakeMessage> m_MessageList;
@@ -380,16 +381,16 @@ namespace pcpp {
     SSLChangeCipherSpecLayer(uint8_t *data, size_t dataLen, AbstractLayer *prevLayer, Packet *packet)
         : SSLLayer(data, dataLen, prevLayer, packet) {}
 
-    ~SSLChangeCipherSpecLayer() {}
+    ~SSLChangeCipherSpecLayer() override = default;
 
     // implement abstract methods
 
-    std::string toString() const;
+    std::string toString() const override;
 
     /**
      * There are no calculated fields for this layer
      */
-    void computeCalculateFields() {}
+    void computeCalculateFields() override {}
   }; // class SSLChangeCipherSpecLayer
 
 
@@ -411,7 +412,7 @@ namespace pcpp {
     SSLAlertLayer(uint8_t *data, size_t dataLen, AbstractLayer *prevLayer, Packet *packet)
         : SSLLayer(data, dataLen, prevLayer, packet) {}
 
-    ~SSLAlertLayer() {}
+    ~SSLAlertLayer() override = default;
 
     /**
      * @return SSL/TLS alert level. Will return ::SSL_ALERT_LEVEL_ENCRYPTED if alert is encrypted
@@ -425,12 +426,12 @@ namespace pcpp {
 
     // implement abstract methods
 
-    std::string toString() const;
+    std::string toString() const override;
 
     /**
      * There are no calculated fields for this layer
      */
-    void computeCalculateFields() {}
+    void computeCalculateFields() override {}
   }; // class SSLAlertLayer
 
 
@@ -452,7 +453,7 @@ namespace pcpp {
     SSLApplicationDataLayer(uint8_t *data, size_t dataLen, AbstractLayer *prevLayer, Packet *packet)
         : SSLLayer(data, dataLen, prevLayer, packet) {}
 
-    ~SSLApplicationDataLayer() {}
+    ~SSLApplicationDataLayer() override = default;
 
     /**
      * @return A pointer to the encrypted data. This data can be decrypted only if you have the symmetric key
@@ -467,21 +468,20 @@ namespace pcpp {
 
     // implement abstract methods
 
-    std::string toString() const;
+    std::string toString() const override;
 
     /**
      * There are no calculated fields for this layer
      */
-    void computeCalculateFields() {}
+    void computeCalculateFields() override {}
   }; // class SSLApplicationDataLayer
 
 
   template<class THandshakeMessage>
   THandshakeMessage *SSLHandshakeLayer::getHandshakeMessageOfType() const {
-    size_t vecSize = m_MessageList.size();
-    for (size_t i = 0; i < vecSize; i++) {
-      SSLHandshakeMessage *curElem = const_cast<SSLHandshakeMessage *>(m_MessageList.at(i));
-      if (dynamic_cast<THandshakeMessage *>(curElem) != NULL)
+    for (auto i: m_MessageList) {
+      auto *curElem = const_cast<SSLHandshakeMessage *>(i);
+      if (dynamic_cast<THandshakeMessage *>(curElem) != nullptr)
         return (THandshakeMessage *) curElem;
     }
 
@@ -493,11 +493,11 @@ namespace pcpp {
   template<class THandshakeMessage>
   THandshakeMessage *SSLHandshakeLayer::getNextHandshakeMessageOfType(const SSLHandshakeMessage *after) const {
     size_t vecSize = m_MessageList.size();
-    size_t afterIndex;
+    int afterIndex;
 
     // find the index of "after"
     for (afterIndex = 0; afterIndex < vecSize; afterIndex++) {
-      SSLHandshakeMessage *curElem = const_cast<SSLHandshakeMessage *>(m_MessageList.at(afterIndex));
+      auto *curElem = const_cast<SSLHandshakeMessage *>(m_MessageList.at(afterIndex));
       if (curElem == after)
         break;
     }
@@ -506,8 +506,8 @@ namespace pcpp {
     if (afterIndex == vecSize)
       return NULL;
 
-    for (size_t i = afterIndex + 1; i < vecSize; i++) {
-      SSLHandshakeMessage *curElem = const_cast<SSLHandshakeMessage *>(m_MessageList.at(i));
+    for (int i = afterIndex + 1; i < vecSize; i++) {
+      auto *curElem = const_cast<SSLHandshakeMessage *>(m_MessageList.at(i));
       if (dynamic_cast<THandshakeMessage *>(curElem) != NULL)
         return (THandshakeMessage *) curElem;
     }

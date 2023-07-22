@@ -17,11 +17,11 @@ namespace pcpp {
 #pragma pack(push, 1)
   struct llc_header {
     /// Destination Service Access Point
-    uint8_t dsap,
+    uint8_t dsap;
     /// Source Service Access Point
-    ssap,
+    uint8_t ssap;
     /// Control Field
-    control;
+    uint8_t control;
   };
 #pragma pack(pop)
 

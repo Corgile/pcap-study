@@ -130,7 +130,7 @@ namespace pcpp {
      */
     DnsLayer &operator=(const DnsLayer &other);
 
-    virtual ~DnsLayer();
+    ~DnsLayer() override;
 
     /**
      * Get a pointer to the DNS common (as opposed to the DNS data which is the queries, answers, etc. Data can be retrieved through the
@@ -181,7 +181,7 @@ namespace pcpp {
      * @return A pointer to the newly created DNS query or NULL if query could not be created (an appropriate error log message will be
      * printed in this case)
      */
-    DnsQuery *addQuery(DnsQuery *const copyQuery);
+    DnsQuery *addQuery(DnsQuery *copyQuery);
 
     /**
      * Remove an existing query by name. If several queries matches the name, the first match will be removed
@@ -245,7 +245,7 @@ namespace pcpp {
      * @return A pointer to the newly created DNS answer or NULL if query could not be created (an appropriate error log message will be
      * printed in this case)
      */
-    DnsResource *addAnswer(DnsResource *const copyAnswer);
+    DnsResource *addAnswer(DnsResource *copyAnswer);
 
     /**
      * Remove an existing answer by name. If several answers matches the name, the first match will be removed
@@ -310,7 +310,7 @@ namespace pcpp {
      * @return A pointer to the newly created DNS authority or NULL if query could not be created (an appropriate error log message will be
      * printed in this case)
      */
-    DnsResource *addAuthority(DnsResource *const copyAuthority);
+    DnsResource *addAuthority(DnsResource *copyAuthority);
 
     /**
      * Remove an existing authority by name. If several authorities matches the name, the first match will be removed
@@ -395,7 +395,7 @@ namespace pcpp {
      * @return A pointer to the newly created DNS additional record or NULL if query could not be created (an appropriate error log message will
      * be printed in this case)
      */
-    DnsResource *addAdditionalRecord(DnsResource *const copyAdditionalRecord);
+    DnsResource *addAdditionalRecord(DnsResource *copyAdditionalRecord);
 
     /**
      * Remove an existing additional record by name. If several additional records matches the name, the first match will be removed
@@ -417,23 +417,23 @@ namespace pcpp {
     /**
      * Does nothing for this layer (DnsLayer is always last)
      */
-    void parseNextLayer() {}
+    void parseNextLayer() override {}
 
     /**
      * @return The size of the DNS data in the packet including he DNS common and size of all queries, answers, authorities and additional
      * records
      */
-    size_t getHeaderLen() const { return m_DataLen; } //No layer above DNS
+    size_t getHeaderLen() const override { return m_DataLen; } //No layer above DNS
 
     /**
      * Does nothing for this layer
      * @return No return value
      */
-    virtual void computeCalculateFields() {}
+    void computeCalculateFields() override {}
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelApplicationLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelApplicationLayer; }
 
     /**
      * A static method that checks whether the port is considered as DNS
@@ -547,7 +547,7 @@ namespace pcpp {
     /**
      * Calculate the TCP message length field
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
   };
 
 

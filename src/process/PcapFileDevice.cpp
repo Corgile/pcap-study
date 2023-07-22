@@ -189,8 +189,8 @@ namespace pcpp {
     }
     timespec ts = {static_cast<time_t>(be32toh(snoop_packet_header.time_sec)),
                    static_cast<long>(be32toh(snoop_packet_header.time_usec)) * 1000};
-    if (!rawPacket.setRawData((const uint8_t *) packetData, packetSize, ts,
-                              static_cast<LinkLayerType>(m_PcapLinkLayerType))) {
+    if (!rawPacket.init((const uint8_t *) packetData, packetSize, ts,
+                        static_cast<LinkLayerType>(m_PcapLinkLayerType))) {
       PCPP_LOG_ERROR("Couldn't set data to raw packet");
       return false;
     }
@@ -282,8 +282,8 @@ namespace pcpp {
 #else
     struct timeval ts = pkthdr.ts;
 #endif
-    if (!rawPacket.setRawData(pMyPacketData, pkthdr.caplen, ts, static_cast<LinkLayerType>(m_PcapLinkLayerType),
-                              pkthdr.len)) {
+    if (!rawPacket.init(pMyPacketData, pkthdr.caplen, ts, static_cast<LinkLayerType>(m_PcapLinkLayerType),
+                        pkthdr.len)) {
       PCPP_LOG_ERROR("Couldn't set data to raw packet");
       return false;
     }
@@ -348,8 +348,8 @@ namespace pcpp {
 
     uint8_t *myPacketData = new uint8_t[pktHeader.captured_length];
     memcpy(myPacketData, pktData, pktHeader.captured_length);
-    if (!rawPacket.setRawData(myPacketData, pktHeader.captured_length, pktHeader.timestamp,
-                              static_cast<LinkLayerType>(pktHeader.data_link), pktHeader.original_length)) {
+    if (!rawPacket.init(myPacketData, pktHeader.captured_length, pktHeader.timestamp,
+                        static_cast<LinkLayerType>(pktHeader.data_link), pktHeader.original_length)) {
       PCPP_LOG_ERROR("Couldn't set data to raw packet");
       return false;
     }

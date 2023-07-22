@@ -4,9 +4,9 @@
 #include "DnsLayer.h"
 #include "DnsLayerEnums.h"
 #include "DnsResourceData.h"
-#include <stdio.h>
+#include <cstdio>
 #include <string>
-#include <stdint.h>
+#include <cstdint>
 
 /// @file
 
@@ -60,7 +60,7 @@ namespace pcpp {
 
   public:
 
-    virtual ~IDnsResource() {}
+    virtual ~IDnsResource() = default;
 
     /**
      * @return The DNS type of this record
@@ -137,12 +137,12 @@ namespace pcpp {
     explicit DnsQuery(uint8_t *emptyRawData) : IDnsResource(emptyRawData) {}
 
   public:
-    virtual ~DnsQuery() {}
+    ~DnsQuery() override = default;
 
     // implementation of abstract methods
-    virtual size_t getSize() const { return m_NameLength + 2 * sizeof(uint16_t); }
+    size_t getSize() const override { return m_NameLength + 2 * sizeof(uint16_t); }
 
-    virtual DnsResourceType getType() const { return DnsQueryType; }
+    DnsResourceType getType() const override { return DnsQueryType; }
   };
 
 
@@ -162,7 +162,7 @@ namespace pcpp {
     DnsResource(uint8_t *emptyRawData, DnsResourceType resType) : IDnsResource(emptyRawData), m_ResourceType(resType) {}
 
   public:
-    virtual ~DnsResource() {}
+    ~DnsResource() override = default;
 
     /**
      * @return The time-to-leave value for this record
@@ -230,9 +230,9 @@ namespace pcpp {
     void setCustomDnsClass(uint16_t customValue);
 
     // implementation of abstract methods
-    virtual size_t getSize() const { return m_NameLength + 3 * sizeof(uint16_t) + sizeof(uint32_t) + getDataLength(); }
+    size_t getSize() const override { return m_NameLength + 3 * sizeof(uint16_t) + sizeof(uint32_t) + getDataLength(); }
 
-    virtual DnsResourceType getType() const { return m_ResourceType; }
+    DnsResourceType getType() const override { return m_ResourceType; }
 
   };
 

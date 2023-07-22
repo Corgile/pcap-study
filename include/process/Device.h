@@ -29,7 +29,7 @@ namespace pcpp {
 
   public:
 
-    virtual ~IDevice() {}
+    virtual ~IDevice() = default;
 
     /**
      * Open the device
@@ -46,7 +46,7 @@ namespace pcpp {
     /**
      * @return True if the file is opened, false otherwise
      */
-    inline bool isOpened() { return m_DeviceOpened; }
+    inline bool isOpened() const { return m_DeviceOpened; }
   };
 
 
@@ -64,7 +64,7 @@ namespace pcpp {
 
   public:
 
-    virtual ~IFilterableDevice() {}
+    virtual ~IFilterableDevice() = default;
 
     /**
      * Set a filter for the device. When implemented by the device, only packets that match the filter will be received

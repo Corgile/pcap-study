@@ -2,7 +2,7 @@
 #define PACKETPP_SSL_LAYER_COMMON
 
 #include <string>
-#include <stdint.h>
+#include <cstdint>
 
 /**
  * @file
@@ -183,7 +183,7 @@ namespace pcpp {
     /**
      * @return The numeric value of the SSL/TLs version
      */
-    uint16_t asUInt() { return m_SSLVersionValue; }
+    uint16_t asUInt() const { return m_SSLVersionValue; }
 
     /**
      * @return A string representation of the SSL/TLS version. For example: for TLS 1.2 the string "TLS 1.2" is returned.

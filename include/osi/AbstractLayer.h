@@ -1,8 +1,8 @@
 #ifndef PACKETPP_LAYER
 #define PACKETPP_LAYER
 
-#include <stdint.h>
-#include <stdio.h>
+#include <cstdint>
+#include <cstdio>
 #include "ProtocolType.h"
 #include <string>
 
@@ -28,7 +28,7 @@ namespace pcpp {
      */
     virtual uint8_t *getDataPtr(size_t offset = 0) const = 0;
 
-    virtual ~IDataContainer() {}
+    virtual ~IDataContainer() = default;
   };
 
   class Packet;
@@ -72,7 +72,7 @@ namespace pcpp {
     /**
      * A destructor for this class. Frees the data if it was allocated by the layer constructor (see isAllocatedToPacket() for more info)
      */
-    virtual ~AbstractLayer();
+    ~AbstractLayer() override;
 
     /**
      * @return A pointer to the next layer in the protocol stack or NULL if the layer is the last one
@@ -117,7 +117,7 @@ namespace pcpp {
      *
      * @return Returns true if the data was allocated by an external source (a packet) or false if it was allocated by the layer itself
      */
-    bool isAllocatedToPacket() const { return m_Packet != NULL; }
+    bool isAllocatedToPacket() const { return m_Packet != nullptr; }
 
     /**
      * Copy the raw data of this layer to another array
@@ -127,7 +127,7 @@ namespace pcpp {
 
     // implement abstract methods
 
-    uint8_t *getDataPtr(size_t offset = 0) const { return (uint8_t *) (m_Data + offset); }
+    uint8_t *getDataPtr(size_t offset = 0) const override { return (uint8_t *) (m_Data + offset); }
 
 
     // abstract methods
@@ -166,13 +166,13 @@ namespace pcpp {
     AbstractLayer *m_PrevLayer;
     bool m_IsAllocatedInPacket;
 
-    AbstractLayer() : m_Data(NULL), m_DataLen(0), m_Packet(NULL), m_Protocol(UnknownProtocol), m_NextLayer(NULL),
-                      m_PrevLayer(NULL), m_IsAllocatedInPacket(false) {}
+    AbstractLayer() : m_Data(nullptr), m_DataLen(0), m_Packet(nullptr), m_Protocol(UnknownProtocol), m_NextLayer(nullptr),
+                      m_PrevLayer(nullptr), m_IsAllocatedInPacket(false) {}
 
     AbstractLayer(uint8_t *data, size_t dataLen, AbstractLayer *prevLayer, Packet *packet) :
         m_Data(data), m_DataLen(dataLen),
         m_Packet(packet), m_Protocol(UnknownProtocol),
-        m_NextLayer(NULL), m_PrevLayer(prevLayer), m_IsAllocatedInPacket(false) {}
+        m_NextLayer(nullptr), m_PrevLayer(prevLayer), m_IsAllocatedInPacket(false) {}
 
     // Copy constructor
     AbstractLayer(const AbstractLayer &other);

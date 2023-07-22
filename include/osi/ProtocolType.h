@@ -1,7 +1,7 @@
 #ifndef PCAPPP_PROTOCOL_TYPES
 #define PCAPPP_PROTOCOL_TYPES
 
-#include <stdint.h>
+#include <cstdint>
 
 /// @file
 

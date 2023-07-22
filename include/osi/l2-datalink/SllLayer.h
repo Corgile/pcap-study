@@ -48,7 +48,7 @@ namespace pcpp {
      * @param[in] dataLen Size of the data in bytes
      * @param[in] packet A pointer to the Packet instance where layer will be stored in
      */
-    SllLayer(uint8_t *data, size_t dataLen, Packet *packet) : AbstractLayer(data, dataLen, NULL, packet) { m_Protocol = SLL; }
+    SllLayer(uint8_t *data, size_t dataLen, Packet *packet) : AbstractLayer(data, dataLen, nullptr, packet) { m_Protocol = SLL; }
 
     /**
      * A constructor that creates a new SLL common and allocates the data
@@ -57,7 +57,7 @@ namespace pcpp {
      */
     SllLayer(uint16_t packetType, uint16_t ARPHRDType);
 
-    ~SllLayer() {}
+    ~SllLayer() override = default;
 
     /**
      * Get a pointer to the Sll common. Notice this points directly to the data, so every change will change the actual packet data
@@ -85,21 +85,21 @@ namespace pcpp {
      * MplsLayer.
      * Otherwise sets PayloadLayer
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return Size of sll_header
      */
-    size_t getHeaderLen() const { return sizeof(sll_header); }
+    size_t getHeaderLen() const override { return sizeof(sll_header); }
 
     /**
      * Calculate the next protocol type for known protocols: IPv4, IPv6, ARP, VLAN
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelDataLinkLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelDataLinkLayer; }
   };
 
 } // namespace pcpp

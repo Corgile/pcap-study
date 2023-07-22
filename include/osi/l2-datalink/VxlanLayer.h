@@ -90,7 +90,7 @@ namespace pcpp {
     explicit VxlanLayer(uint32_t vni = 0, uint16_t groupPolicyID = 0, bool setGbpFlag = false,
                         bool setPolicyAppliedFlag = false, bool setDontLearnFlag = false);
 
-    ~VxlanLayer() {}
+    ~VxlanLayer() override = default;
 
     /**
      * Get a pointer to the VXLAN common. Notice this points directly to the data, so every change will change the actual packet data
@@ -121,21 +121,21 @@ namespace pcpp {
     /**
      * Next layer for VXLAN is always Ethernet
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return Size of vxlan_header
      */
-    size_t getHeaderLen() const { return sizeof(vxlan_header); }
+    size_t getHeaderLen() const override { return sizeof(vxlan_header); }
 
     /**
      * Does nothing for this layer
      */
-    void computeCalculateFields() {}
+    void computeCalculateFields() override {}
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelDataLinkLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelDataLinkLayer; }
 
   };
 

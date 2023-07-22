@@ -94,17 +94,17 @@ namespace pcpp {
     /**
      * @return The size of the BGP message
      */
-    size_t getHeaderLen() const;
+    size_t getHeaderLen() const override;
 
     /**
      * Multiple BGP messages can reside in a single packet, and the only layer that can come after a BGP message
      * is another BGP message. This method checks for remaining data and parses it as another BGP layer
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelApplicationLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelApplicationLayer; }
 
     /**
      * Calculates the basic BGP fields:
@@ -112,7 +112,7 @@ namespace pcpp {
      * - Set message type value
      * - Set message length
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
 
   protected:
 
@@ -170,7 +170,7 @@ namespace pcpp {
       /**
        * A default constructor that zeroes all data
        */
-      optional_parameter() {}
+      optional_parameter() = default;
 
       /**
        * A constructor that initializes the values of the struct
@@ -212,7 +212,7 @@ namespace pcpp {
     /**
      * @return The BGP identifier as IPv4Address object
      */
-    IPv4Address getBgpId() const { return IPv4Address(getOpenMsgHeader()->bgpId); }
+    IPv4Address getBgpId() const { return {getOpenMsgHeader()->bgpId}; }
 
     /**
      * Set the BGP identifier
@@ -252,7 +252,7 @@ namespace pcpp {
 
     // implement abstract methods
 
-    BgpMessageType getBgpMessageType() const { return BgpLayer::Open; }
+    BgpMessageType getBgpMessageType() const override { return BgpLayer::Open; }
 
   private:
 
@@ -311,7 +311,7 @@ namespace pcpp {
       /**
        * A default constructor that zeroes all data
        */
-      path_attribute() {}
+      path_attribute() = default;
 
       /**
        * A constructor that initializes the values of the struct
@@ -440,7 +440,7 @@ namespace pcpp {
 
     // implement abstract methods
 
-    BgpMessageType getBgpMessageType() const { return BgpLayer::Update; }
+    BgpMessageType getBgpMessageType() const override { return BgpLayer::Update; }
 
   private:
 
@@ -559,7 +559,7 @@ namespace pcpp {
 
     // implement abstract methods
 
-    BgpMessageType getBgpMessageType() const { return BgpLayer::Notification; }
+    BgpMessageType getBgpMessageType() const override { return BgpLayer::Notification; }
 
   private:
 
@@ -606,7 +606,7 @@ namespace pcpp {
 
     // implement abstract methods
 
-    BgpMessageType getBgpMessageType() const { return BgpLayer::Keepalive; }
+    BgpMessageType getBgpMessageType() const override { return BgpLayer::Keepalive; }
 
   };
 
@@ -660,7 +660,7 @@ namespace pcpp {
 
     // implement abstract methods
 
-    BgpMessageType getBgpMessageType() const { return BgpLayer::RouteRefresh; }
+    BgpMessageType getBgpMessageType() const override { return BgpLayer::RouteRefresh; }
 
   };
 

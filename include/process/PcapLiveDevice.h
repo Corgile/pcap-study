@@ -112,11 +112,6 @@ namespace pcpp {
     // constructor is not public, there should be only one for every interface (created by PcapLiveDeviceList)
     PcapLiveDevice(pcap_if_t *pInterface, bool calculateMTU, bool calculateMacAddress, bool calculateDefaultGateway);
 
-    // copy constructor is not public
-    PcapLiveDevice(const PcapLiveDevice &other);
-
-    PcapLiveDevice &operator=(const PcapLiveDevice &other);
-
     void setDeviceMtu();
 
     void setDeviceMacAddress();
@@ -243,7 +238,7 @@ namespace pcpp {
     /**
      * A destructor for this class
      */
-    virtual ~PcapLiveDevice();
+    ~PcapLiveDevice() override;
 
     /**
      * @return The type of the device (libPcap, WinPcap/Npcap or a remote device)
@@ -311,12 +306,12 @@ namespace pcpp {
     static const std::vector<IPv4Address> &getDnsServers();
 
     /**
-     * Start capturing packets on this network interface (device). Each time a packet is captured the onPacketArrives callback is called.
+     * Start capturing packets on this network interface (device). Each time a packet is captured the callback callback is called.
      * The capture is done on a new thread created by this method, meaning all callback calls are done in a thread other than the
      * caller thread. Capture process will stop and this capture thread will be terminated when calling stopCapture(). This method must be
      * called after the device is opened (i.e the open() method was called), otherwise an error will be returned.
      * @param[in] onPacketArrives A callback that is called each time a packet is captured
-     * @param[in] onPacketArrivesUserCookie A pointer to a user provided object. This object will be transferred to the onPacketArrives callback
+     * @param[in] onPacketArrivesUserCookie A pointer to a user provided object. This object will be transferred to the callback callback
      * each time it is called. This cookie is very useful for transferring objects that give context to the capture callback, for example:
      * objects that counts packets, manages flow state or manages the application state according to the packet that was captured
      * @return True if capture started successfully, false if (relevant log error is printed in any case):
@@ -327,14 +322,14 @@ namespace pcpp {
     virtual bool startCapture(OnPacketArrivesCallback onPacketArrives, void *onPacketArrivesUserCookie);
 
     /**
-     * Start capturing packets on this network interface (device) with periodic stats collection. Each time a packet is captured the onPacketArrives
+     * Start capturing packets on this network interface (device) with periodic stats collection. Each time a packet is captured the callback
      * callback is called. In addition, each intervalInSecondsToUpdateStats seconds stats are collected from the device and the onStatsUpdate
      * callback is called. Both the capture and periodic stats collection are done on new threads created by this method, each on a different thread,
      * meaning all callback calls are done in threads other than the caller thread. Capture process and stats collection will stop and threads will be
      * terminated when calling stopCapture(). This method must be called after the device is opened (i.e the open() method was called), otherwise an
      * error will be returned.
      * @param[in] onPacketArrives A callback that is called each time a packet is captured
-     * @param[in] onPacketArrivesUserCookie A pointer to a user provided object. This object will be transferred to the onPacketArrives callback
+     * @param[in] onPacketArrivesUserCookie A pointer to a user provided object. This object will be transferred to the callback callback
      * each time it is called. This cookie is very useful for transferring objects that give context to the capture callback, for example:
      * objects that counts packets, manages flow state or manages the application state according to the packet that was captured
      * @param[in] intervalInSecondsToUpdateStats The interval in seconds to activate periodic stats collection
@@ -389,21 +384,21 @@ namespace pcpp {
 
     /**
      * Start capturing packets on this network interface (device) in blocking mode, meaning this method blocks and won't return until
-     * the user frees the blocking (via onPacketArrives callback) or until a user defined timeout expires.
-     * Whenever a packets is captured the onPacketArrives callback is called and lets the user handle the packet. In each callback call
+     * the user frees the blocking (via callback callback) or until a user defined timeout expires.
+     * Whenever a packets is captured the callback callback is called and lets the user handle the packet. In each callback call
      * the user should return true if he wants to release the block or false if it wants it to keep blocking. Regardless of this callback
      * a timeout is defined when start capturing. When this timeout expires the method will return.<BR>
      * Please notice that stopCapture() isn't needed here because when the method returns (after timeout or per user decision) capturing
      * on the device is stopped
      * @param[in] onPacketArrives A callback given by the user for handling incoming packets. After handling each packet the user needs to
      * return a boolean value. True value indicates stop capturing and stop blocking and false value indicates continue capturing and blocking
-     * @param[in] userCookie A pointer to a user provided object. This object will be transferred to the onPacketArrives callback
+     * @param[in] userCookie A pointer to a user provided object. This object will be transferred to the callback callback
      * each time it is called. This cookie is very useful for transferring objects that give context to the capture callback, for example:
      * objects that counts packets, manages flow state or manages the application state according to the packet that was captured
-     * @param[in] timeout A timeout in seconds for the blocking to stop even if the user didn't return "true" in the onPacketArrives callback
+     * @param[in] timeout A timeout in seconds for the blocking to stop even if the user didn't return "true" in the callback callback
      * If this timeout is set to 0 or less the timeout will be ignored, meaning the method will keep blocking until the user frees it via
-     * the onPacketArrives callback
-     * @return -1 if timeout expired, 1 if blocking was stopped via onPacketArrives callback or 0 if an error occurred (such as device
+     * the callback callback
+     * @return -1 if timeout expired, 1 if blocking was stopped via callback callback or 0 if an error occurred (such as device
      * not open etc.). When returning 0 an appropriate error message is printed to log
      */
     virtual int startCaptureBlockingMode(OnPacketArrivesStopBlocking onPacketArrives, void *userCookie, int timeout);
@@ -542,7 +537,7 @@ namespace pcpp {
      * @return True if the device was opened successfully, false otherwise. When opening the device fails an error will be printed to log
      * as well
      */
-    bool open();
+    bool open() override;
 
     /**
      * Enables to open a device in a non-default configuration. Configuration has parameters like packet buffer timeout & size, open in
@@ -552,7 +547,7 @@ namespace pcpp {
      */
     bool open(const DeviceConfiguration &config);
 
-    void close();
+    void close() override;
 
     /**
      * Clones the current device class
@@ -560,10 +555,16 @@ namespace pcpp {
      */
     PcapLiveDevice *clone() const;
 
-    virtual void getStatistics(IPcapDevice::PcapStats &stats) const;
+    void getStatistics(IPcapDevice::PcapStats &stats) const override;
 
   protected:
     pcap_t *doOpen(const DeviceConfiguration &config);
+
+  private:
+    // copy constructor is not public
+    PcapLiveDevice(const PcapLiveDevice &other);
+
+    PcapLiveDevice &operator=(const PcapLiveDevice &other);
   };
 
 } // namespace pcpp

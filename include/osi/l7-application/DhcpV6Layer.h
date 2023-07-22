@@ -202,7 +202,7 @@ namespace pcpp {
     /**
      * A d'tor for this class, currently does nothing
      */
-    virtual ~DhcpV6Option() {}
+    ~DhcpV6Option() override = default;
 
     /**
      * @return The option type converted to ::DhcpV6OptionType enum
@@ -216,9 +216,9 @@ namespace pcpp {
 
     // implement abstract methods
 
-    size_t getTotalSize() const;
+    size_t getTotalSize() const override;
 
-    size_t getDataSize() const;
+    size_t getDataSize() const override;
   };
 
   /**
@@ -408,21 +408,21 @@ namespace pcpp {
     /**
      * Does nothing for this layer (DhcpV6Layer is always last)
      */
-    void parseNextLayer() {}
+    void parseNextLayer() override {}
 
     /**
      * @return The size of @ref dhcpv6_header + size of options
      */
-    size_t getHeaderLen() const { return m_DataLen; }
+    size_t getHeaderLen() const override { return m_DataLen; }
 
     /**
      * Does nothing for this layer
      */
-    void computeCalculateFields() {}
+    void computeCalculateFields() override {}
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelApplicationLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelApplicationLayer; }
 
   private:
     uint8_t *getOptionsBasePtr() const { return m_Data + sizeof(dhcpv6_header); }

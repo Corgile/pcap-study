@@ -168,7 +168,7 @@ namespace pcpp {
 
   public:
 
-    virtual ~IgmpLayer() {}
+    ~IgmpLayer() override = default;
 
     /**
      * Get a pointer to the raw IGMPv1/IGMPv2 common. Notice this points directly to the data, so every change will change the actual packet data
@@ -215,16 +215,16 @@ namespace pcpp {
     /**
      * Does nothing for this layer (IGMP layer is always last)
      */
-    void parseNextLayer() {}
+    void parseNextLayer() override {}
 
     /**
      * @return Size of IGMP common = 8B
      */
-    size_t getHeaderLen() const { return sizeof(igmp_header); }
+    size_t getHeaderLen() const override { return sizeof(igmp_header); }
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelNetworkLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelNetworkLayer; }
   };
 
 
@@ -255,7 +255,7 @@ namespace pcpp {
     /**
      * A destructor for this layer (does nothing)
      */
-    ~IgmpV1Layer() {}
+    ~IgmpV1Layer() override = default;
 
 
     // implement abstract methods
@@ -263,7 +263,7 @@ namespace pcpp {
     /**
      * Calculate the IGMP checksum and set igmp_header#maxResponseTime to 0 (this field is unused in IGMPv1)
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
 
   };
 
@@ -295,7 +295,7 @@ namespace pcpp {
     /**
      * A destructor for this layer (does nothing)
      */
-    ~IgmpV2Layer() {}
+    ~IgmpV2Layer() override = default;
 
 
     // implement abstract methods
@@ -303,7 +303,7 @@ namespace pcpp {
     /**
      * Calculate the IGMP checksum
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
   };
 
 
@@ -389,12 +389,12 @@ namespace pcpp {
     /**
      * Calculate the IGMP checksum
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
 
     /**
      * @return The message size in bytes which include the size of the basic common + the size of the source address list
      */
-    size_t getHeaderLen() const;
+    size_t getHeaderLen() const override;
   };
 
 
@@ -498,12 +498,12 @@ namespace pcpp {
     /**
      * Calculate the IGMP checksum
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
 
     /**
      * @return The message size in bytes which include the size of the basic common + the size of the group record list
      */
-    size_t getHeaderLen() const { return m_DataLen; }
+    size_t getHeaderLen() const override { return m_DataLen; }
   };
 
 }

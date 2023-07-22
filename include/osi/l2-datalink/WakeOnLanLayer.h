@@ -144,25 +144,25 @@ namespace pcpp {
     // overridden methods
 
     /// Parses the next layer. Wake on LAN is the always last so does nothing for this layer
-    void parseNextLayer() {}
+    void parseNextLayer() override {}
 
     /**
      * @return Get the size of the layer
      */
-    size_t getHeaderLen() const { return m_DataLen; }
+    size_t getHeaderLen() const override { return m_DataLen; }
 
     /// Does nothing for this layer
-    void computeCalculateFields() {}
+    void computeCalculateFields() override {}
 
     /**
      * @return The OSI layer level of Wake on LAN (Data Link AbstractLayer)
      */
-    OsiModelLayer getOsiModelLayer() const { return OsiModelDataLinkLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelDataLinkLayer; }
 
     /**
      * @return Returns the protocol info as readable string
      */
-    std::string toString() const;
+    std::string toString() const override;
   };
 } // namespace pcpp
 

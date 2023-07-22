@@ -1,17 +1,18 @@
-#include "osi/l2-datalink/EthDot3Layer.h"
 #include "EndianPortable.h"
+#include "osi/l2-datalink/EthDot3Layer.h"
 #include "osi/l7-application/PayloadLayer.h"
 #include "osi/l2-datalink/LLCLayer.h"
 
 namespace pcpp {
 
-  EthDot3Layer::EthDot3Layer(const MacAddress &sourceMac, const MacAddress &destMac, uint16_t length) : AbstractLayer() {
+  EthDot3Layer::EthDot3Layer(const MacAddress &sourceMac, const MacAddress &destMac, uint16_t length)
+      : AbstractLayer() {
     const size_t headerLen = sizeof(ether_dot3_header);
     m_DataLen = headerLen;
     m_Data = new uint8_t[headerLen];
     memset(m_Data, 0, headerLen);
 
-    ether_dot3_header *ethHdr = (ether_dot3_header *) m_Data;
+    auto *ethHdr = (ether_dot3_header *) m_Data;
     destMac.copyTo(ethHdr->dstMac);
     sourceMac.copyTo(ethHdr->srcMac);
     ethHdr->length = be16toh(length);

@@ -41,20 +41,20 @@ namespace pcpp {
     // overridden methods
 
     /// FTP is the always last so does nothing for this layer
-    void parseNextLayer() {}
+    void parseNextLayer() override {}
 
     /**
      * @return Get the size of the layer
      */
-    size_t getHeaderLen() const { return m_DataLen; }
+    size_t getHeaderLen() const override { return m_DataLen; }
 
     /// Does nothing for this layer
-    void computeCalculateFields() {}
+    void computeCalculateFields() override {}
 
     /**
      * @return The OSI layer level of FTP (Application AbstractLayer).
      */
-    OsiModelLayer getOsiModelLayer() const { return OsiModelApplicationLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelApplicationLayer; }
 
   };
 
@@ -281,7 +281,7 @@ namespace pcpp {
     /**
      * @return Returns the protocol info as readable string
      */
-    std::string toString() const;
+    std::string toString() const override;
   };
 
   /**
@@ -472,7 +472,7 @@ namespace pcpp {
     /**
      * @return Returns the protocol info as readable string
      */
-    std::string toString() const;
+    std::string toString() const override;
   };
 
   /**
@@ -494,7 +494,7 @@ namespace pcpp {
     /**
      * @return Returns the protocol info as readable string
      */
-    std::string toString() const;
+    std::string toString() const override;
   };
 } // namespace pcpp
 

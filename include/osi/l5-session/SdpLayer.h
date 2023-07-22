@@ -94,7 +94,7 @@ namespace pcpp {
     SdpLayer(const std::string &username, long sessionID, long sessionVersion, IPv4Address ipAddress,
              const std::string &sessionName, long startTime, long stopTime);
 
-    ~SdpLayer() {}
+    ~SdpLayer() override = default;
 
     /**
      * A copy constructor for this layer. Inherits the base copy constructor and doesn't add
@@ -156,16 +156,16 @@ namespace pcpp {
 
     // overridden methods
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelSesionLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelSesionLayer; }
 
-    std::string toString() const;
+    std::string toString() const override;
 
   protected:
 
     // implementation of abstract methods
-    char getHeaderFieldNameValueSeparator() const { return '='; }
+    char getHeaderFieldNameValueSeparator() const override { return '='; }
 
-    bool spacesAllowedBetweenHeaderFieldNameAndValue() const { return false; }
+    bool spacesAllowedBetweenHeaderFieldNameAndValue() const override { return false; }
 
   };
 }

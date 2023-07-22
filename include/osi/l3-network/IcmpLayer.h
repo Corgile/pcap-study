@@ -396,7 +396,7 @@ namespace pcpp {
      */
     IcmpLayer();
 
-    virtual ~IcmpLayer() {}
+    ~IcmpLayer() override = default;
 
     /**
      * Get a pointer to the basic ICMP common. Notice this points directly to the data, so every change will change the actual packet data
@@ -684,23 +684,23 @@ namespace pcpp {
      * have data that contains sf_IPv4 common and some L4 common (TCP/UDP/ICMP). This method parses these osi as separate
      * layers on top of the ICMP layer
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return The ICMP common length. This length varies according to the ICMP message type. This length doesn't include
      * sf_IPv4 and L4 osi in case ICMP message type are: ICMP_DEST_UNREACHABLE, ICMP_SOURCE_QUENCH, ICMP_TIME_EXCEEDED,
      * ICMP_REDIRECT, ICMP_PARAM_PROBLEM
      */
-    size_t getHeaderLen() const;
+    size_t getHeaderLen() const override;
 
     /**
      * Calculate ICMP checksum field
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelNetworkLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelNetworkLayer; }
   };
 
   // implementation of inline methods

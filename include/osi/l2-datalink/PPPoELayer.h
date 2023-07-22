@@ -4,7 +4,7 @@
 #include "osi/AbstractLayer.h"
 #include "osi/TLVData.h"
 #include <vector>
-#include <string.h>
+#include <cstring>
 
 /// @file
 
@@ -22,18 +22,18 @@ namespace pcpp {
   struct pppoe_header {
 #if (BYTE_ORDER == LITTLE_ENDIAN)
     /** PPPoE version */
-    uint8_t version: 4,
+    uint8_t version: 4;
     /** PPPoE type */
-    type: 4;
+    uint8_t type: 4;
     /** PPPoE code */
     uint8_t code;
 #else
     /** PPPoE version */
-    uint16_t version:4,
+    uint16_t  version: 4,
     /** PPPoE type */
-    type:4,
+    uint16_t  type: 4,
     /** PPPoE code */
-    code:8;
+    uint16_t  code: 8;
 #endif
     /** PPPoE session ID (relevant for PPPoE session packets only) */
     uint16_t sessionId;
@@ -78,7 +78,7 @@ namespace pcpp {
       PPPOE_CODE_PADN = 0xd4
     };
 
-    ~PPPoELayer() {}
+    ~PPPoELayer() override = default;
 
     /**
      * Get a pointer to the PPPoE common. Notice this points directly to the data, so every change will change the actual packet data
@@ -91,14 +91,15 @@ namespace pcpp {
     /**
      * Calculate @ref pppoe_header#payloadLength field
      */
-    virtual void computeCalculateFields();
+    void computeCalculateFields() override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelDataLinkLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelDataLinkLayer; }
 
   protected:
 
     // protected constructor as this class shouldn't be instantiated
-    PPPoELayer(uint8_t *data, size_t dataLen, AbstractLayer *prevLayer, Packet *packet) : AbstractLayer(data, dataLen, prevLayer,
+    PPPoELayer(uint8_t *data, size_t dataLen, AbstractLayer *prevLayer, Packet *packet) : AbstractLayer(data, dataLen,
+                                                                                                        prevLayer,
                                                                                                         packet) {}
 
     // protected constructor as this class shouldn't be instantiated
@@ -122,7 +123,8 @@ namespace pcpp {
      * @param[in] prevLayer A pointer to the previous layer
      * @param[in] packet A pointer to the Packet instance where layer will be stored in
      */
-    PPPoESessionLayer(uint8_t *data, size_t dataLen, AbstractLayer *prevLayer, Packet *packet) : PPPoELayer(data, dataLen,
+    PPPoESessionLayer(uint8_t *data, size_t dataLen, AbstractLayer *prevLayer, Packet *packet) : PPPoELayer(data,
+                                                                                                            dataLen,
                                                                                                             prevLayer,
                                                                                                             packet) { m_Protocol = PPPoESession; }
 
@@ -141,7 +143,7 @@ namespace pcpp {
       setPPPNextProtocol(pppNextProtocol);
     }
 
-    virtual ~PPPoESessionLayer() {}
+    ~PPPoESessionLayer() override = default;
 
     /**
      * @return The protocol after the PPPoE session common. The return value is one of the PPP_* macros listed below. This method is also
@@ -168,14 +170,14 @@ namespace pcpp {
     /**
      * Currently identifies the following next layers: IPv4Layer, IPv6Layer. Otherwise sets PayloadLayer
      */
-    virtual void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return Size of @ref pppoe_header
      */
-    virtual size_t getHeaderLen() const { return sizeof(pppoe_header) + sizeof(uint16_t); }
+    size_t getHeaderLen() const override { return sizeof(pppoe_header) + sizeof(uint16_t); }
 
-    virtual std::string toString() const;
+    std::string toString() const override;
   };
 
 
@@ -242,7 +244,7 @@ namespace pcpp {
       /**
        * A d'tor for this class, currently does nothing
        */
-      virtual ~PPPoETag() {}
+      ~PPPoETag() override = default;
 
       /**
        * @return The tag type converted to PPPoEDiscoveryLayer#PPPoETagTypes enum
@@ -258,14 +260,14 @@ namespace pcpp {
         if (dataSize < 1)
           return "";
 
-        return std::string((const char *) m_Data->recordValue, dataSize);
+        return {(const char *) m_Data->recordValue, dataSize};
       }
 
       // implement abstract methods
 
-      size_t getTotalSize() const;
+      size_t getTotalSize() const override;
 
-      size_t getDataSize() const;
+      size_t getDataSize() const override;
     };
 
 
@@ -283,7 +285,7 @@ namespace pcpp {
        * @param[in] tagType Tag type
        */
       explicit PPPoETagBuilder(PPPoETagTypes tagType) :
-          TLVRecordBuilder(static_cast<uint16_t>(tagType), NULL, 0) {}
+          TLVRecordBuilder(static_cast<uint16_t>(tagType), nullptr, 0) {}
 
       /**
        * A constructor for building a PPPoE Tag which has a 4-byte value. The PPPoETag object can later
@@ -318,7 +320,8 @@ namespace pcpp {
      * @param[in] prevLayer A pointer to the previous layer
      * @param[in] packet A pointer to the Packet instance where layer will be stored in
      */
-    PPPoEDiscoveryLayer(uint8_t *data, size_t dataLen, AbstractLayer *prevLayer, Packet *packet) : PPPoELayer(data, dataLen,
+    PPPoEDiscoveryLayer(uint8_t *data, size_t dataLen, AbstractLayer *prevLayer, Packet *packet) : PPPoELayer(data,
+                                                                                                              dataLen,
                                                                                                               prevLayer,
                                                                                                               packet) {
       m_Protocol = PPPoEDiscovery;
@@ -407,14 +410,14 @@ namespace pcpp {
     /**
      * Does nothing for this layer (PPPoE discovery is always the last layer)
      */
-    virtual void parseNextLayer() {}
+    void parseNextLayer() override {}
 
     /**
      * @return The common length which is size of strcut pppoe_header plus the total size of tags
      */
-    virtual size_t getHeaderLen() const;
+    size_t getHeaderLen() const override;
 
-    virtual std::string toString() const {
+    std::string toString() const override {
       return "PPP-over-Ethernet Discovery (" + codeToString((PPPoELayer::PPPoECode) getPPPoEHeader()->code) + ")";
     }
 

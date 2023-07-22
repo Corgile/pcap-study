@@ -303,7 +303,7 @@ namespace pcpp {
       GtpExtension getNextExtension() const;
     }; // GtpExtension
 
-    virtual ~GtpV1Layer() {}
+    ~GtpV1Layer() override = default;
 
     /** A constructor that creates the layer from an existing packet raw data
     * @param[in] data A pointer to the raw data
@@ -359,7 +359,7 @@ namespace pcpp {
      * @param[in] seqNumber The sequence number to set
      * @return True if the value was set successfully, false otherwise. In case of failure a corresponding error message will be written to log
      */
-    bool setSequenceNumber(const uint16_t seqNumber);
+    bool setSequenceNumber(uint16_t seqNumber);
 
     /**
      * Get the N-PDU number if exists on the message (N-PDU number is an optional field in GTP messages)
@@ -374,7 +374,7 @@ namespace pcpp {
      * @param[in] npduNum The N-PDU number to set
      * @return True if the value was set successfully, false otherwise. In case of failure a corresponding error message will be written to log
      */
-    bool setNpduNumber(const uint8_t npduNum);
+    bool setNpduNumber(uint8_t npduNum);
 
     /**
      * Get the type of the next common extension if exists on the message (extensions are optional in GTP messages)
@@ -434,7 +434,7 @@ namespace pcpp {
     /**
      * Identifies the following next layers for GTP-U packets: IPv4Layer, IPv6Layer. Otherwise sets PayloadLayer
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return The size of the GTP common. For GTP-C packets the size is determined by the value of
@@ -442,17 +442,17 @@ namespace pcpp {
      * the size of gtpv1_header plus the size of the optional fields such as sequence number, N-PDU
      * or extensions if exist)
      */
-    size_t getHeaderLen() const;
+    size_t getHeaderLen() const override;
 
     /**
      * Calculate the following fields:
      * - gtpv1_header#messageLength
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelTransportLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelTransportLayer; }
   };
 }
 

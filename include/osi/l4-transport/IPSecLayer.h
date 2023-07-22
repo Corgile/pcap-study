@@ -102,21 +102,21 @@ namespace pcpp {
     /**
      * @return The size of the AH common
      */
-    size_t getHeaderLen() const { return 4 * (getAHHeader()->payloadLen + 2); }
+    size_t getHeaderLen() const override { return 4 * (getAHHeader()->payloadLen + 2); }
 
     /**
      * Currently identifies the following next layers: UdpLayer, TcpLayer, IPv4Layer, IPv6Layer and ESPLayer. Otherwise sets PayloadLayer
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * Does nothing for this layer
      */
-    void computeCalculateFields() {}
+    void computeCalculateFields() override {}
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelNetworkLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelNetworkLayer; }
 
   private:
     // this layer supports parsing only
@@ -164,21 +164,21 @@ namespace pcpp {
     /**
      * @return The size of the ESP common (8 bytes)
      */
-    size_t getHeaderLen() const { return sizeof(ipsec_esp); }
+    size_t getHeaderLen() const override { return sizeof(ipsec_esp); }
 
     /**
      * The payload of an ESP layer is encrypted, hence the next layer is always a generic payload (PayloadLayer)
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * Does nothing for this layer
      */
-    void computeCalculateFields() {}
+    void computeCalculateFields() override {}
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelTransportLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelTransportLayer; }
 
   private:
     // this layer supports parsing only

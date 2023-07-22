@@ -122,7 +122,7 @@ namespace pcpp {
     friend class HeaderField;
 
   public:
-    ~TextBasedProtocolMessage();
+    ~TextBasedProtocolMessage() override;
 
     /**
      * Get a pointer to a common field by name. The search is case insensitive, meaning if a field with name "Host" exists and the
@@ -144,10 +144,10 @@ namespace pcpp {
      * @param[in] prevField A pointer to the field
      * @return The field after prevField or NULL if prevField is the last field. If prevField is NULL, this method will return NULL
      */
-    HeaderField *getNextField(HeaderField *prevField) const {
-      if (prevField != NULL)
+    static HeaderField *getNextField(HeaderField *prevField) {
+      if (prevField != nullptr)
         return prevField->getNextField();
-      else return NULL;
+      else return nullptr;
     }
 
     /**
@@ -233,22 +233,22 @@ namespace pcpp {
     /**
      * Currently set only PayloadLayer for the rest of the data
      */
-    virtual void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return The message length
      */
-    size_t getHeaderLen() const;
+    size_t getHeaderLen() const override;
 
     /**
      * Does nothing for this class
      */
-    virtual void computeCalculateFields();
+    void computeCalculateFields() override;
 
   protected:
     TextBasedProtocolMessage(uint8_t *data, size_t dataLen, AbstractLayer *prevLayer, Packet *packet);
 
-    TextBasedProtocolMessage() : m_FieldList(NULL), m_LastField(NULL), m_FieldsOffset(0) {}
+    TextBasedProtocolMessage() : m_FieldList(nullptr), m_LastField(nullptr), m_FieldsOffset(0) {}
 
     // copy constructor
     TextBasedProtocolMessage(const TextBasedProtocolMessage &other);

@@ -352,7 +352,7 @@ namespace pcpp {
           return false;
         }
         expectingValue = 0;
-      } else if (expectingValue == 0 && curByte != 0) {
+      } else if (curByte != 0) {
         return false;
       }
     }
@@ -364,11 +364,11 @@ namespace pcpp {
   void IPv6Network::initFromAddressAndPrefixLength(const IPv6Address &address, uint8_t prefixLen) {
     memset(m_Mask, 0, IPV6_ADDR_SIZE);
     int remainingPrefixLen = prefixLen;
-    for (auto byteIndex = 0; byteIndex < IPV6_ADDR_SIZE; byteIndex++) {
+    for (unsigned char & byteIndex : m_Mask) {
       if (remainingPrefixLen >= 8) {
-        m_Mask[byteIndex] = 0xff;
+        byteIndex = 0xff;
       } else if (remainingPrefixLen > 0) {
-        m_Mask[byteIndex] = 0xff << (8 - remainingPrefixLen);
+        byteIndex = 0xff << (8 - remainingPrefixLen);
       } else {
         break;
       }
@@ -457,8 +457,8 @@ namespace pcpp {
 
   uint8_t IPv6Network::getPrefixLen() const {
     uint8_t result = 0;
-    for (auto byteIndex = 0; byteIndex < IPV6_ADDR_SIZE; byteIndex++) {
-      std::bitset<8> bs(m_Mask[byteIndex]);
+    for (unsigned char byteIndex : m_Mask) {
+      std::bitset<8> bs(byteIndex);
       result += static_cast<uint8_t>(bs.count());
     }
     return result;
@@ -490,9 +490,9 @@ namespace pcpp {
 
   uint64_t IPv6Network::getTotalAddressCount() const {
     int numOfBitset = 0;
-    for (auto byteIndex = 0; byteIndex < IPV6_ADDR_SIZE; byteIndex++) {
-      std::bitset<8> bitset(static_cast<uint8_t>(~m_Mask[byteIndex]));
-      numOfBitset += bitset.count();
+    for (unsigned char byteIndex : m_Mask) {
+      std::bitset<8> bitset(static_cast<uint8_t>(~byteIndex));
+      numOfBitset += (int)bitset.count();
     }
 
     if (numOfBitset >= 64) {

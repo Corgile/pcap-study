@@ -52,7 +52,7 @@ namespace pcpp {
      */
     TpktLayer(uint8_t version, uint16_t length);
 
-    virtual ~TpktLayer() {}
+    ~TpktLayer() override = default;
 
     /**
      * @return TPKT reserved

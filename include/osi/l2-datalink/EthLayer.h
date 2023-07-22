@@ -41,7 +41,7 @@ namespace pcpp {
 #define PCPP_ETHERTYPE_AT            0x809B
   /** AppleTalk ARP */
 #define PCPP_ETHERTYPE_AARP          0x80F3
-  /** IEEE 802.1Q VLAN tagging */
+  /** IEEE 802.1q VLAN tagging */
 #define PCPP_ETHERTYPE_VLAN          0x8100
   /** IPX */
 #define PCPP_ETHERTYPE_IPX           0x8137

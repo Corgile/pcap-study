@@ -1,7 +1,7 @@
 #define LOG_MODULE PacketLogModuleRawPacket
 
 #include "RawPacket.h"
-#include <string.h>
+#include <cstring>
 #include "Logger.h"
 #include "TimespecTimeval.h"
 
@@ -21,13 +21,13 @@ namespace pcpp {
     timespec nsec_time;
     TIMEVAL_TO_TIMESPEC(&timestamp, &nsec_time);
     init(deleteRawDataAtDestructor);
-    setRawData(pRawData, rawDataLen, nsec_time, layerType);
+    init(pRawData, rawDataLen, nsec_time, layerType);
   }
 
   RawPacket::RawPacket(const uint8_t *pRawData, int rawDataLen, timespec timestamp, bool deleteRawDataAtDestructor,
                        LinkLayerType layerType) {
     init(deleteRawDataAtDestructor);
-    setRawData(pRawData, rawDataLen, timestamp, layerType);
+    init(pRawData, rawDataLen, timestamp, layerType);
   }
 
   RawPacket::RawPacket() {
@@ -47,8 +47,7 @@ namespace pcpp {
 
   RawPacket &RawPacket::operator=(const RawPacket &other) {
     if (this != &other) {
-      if (m_RawData != nullptr)
-        delete[] m_RawData;
+      delete[] m_RawData;
 
       m_RawPacketSet = false;
 
@@ -81,15 +80,15 @@ namespace pcpp {
                              int frameLength) {
     timespec nsec_time;
     TIMEVAL_TO_TIMESPEC(&timestamp, &nsec_time);
-    return setRawData(pRawData, rawDataLen, nsec_time, layerType, frameLength);
+    return init(pRawData, rawDataLen, nsec_time, layerType, frameLength);
   }
 
-  bool RawPacket::setRawData(const uint8_t *pRawData, int rawDataLen, timespec timestamp, LinkLayerType layerType,
-                             int frameLength) {
+  bool RawPacket::init(const uint8_t *pRawData, int rawDataLen, timespec timestamp, LinkLayerType layerType,
+                       int frameLength) {
     if (frameLength == -1)
       frameLength = rawDataLen;
     m_FrameLength = frameLength;
-    if (m_RawData != nullptr && m_DeleteRawDataAtDestructor) {
+    if (m_DeleteRawDataAtDestructor) {
       delete[] m_RawData;
     }
 
@@ -102,8 +101,8 @@ namespace pcpp {
   }
 
   void RawPacket::clear() {
-    if (m_RawData != nullptr)
-      delete[] m_RawData;
+
+    delete[] m_RawData;
 
     m_RawData = nullptr;
     m_RawDataLen = 0;
@@ -111,13 +110,13 @@ namespace pcpp {
     m_RawPacketSet = false;
   }
 
-  void RawPacket::appendData(const uint8_t *dataToAppend, size_t dataToAppendLen) {
+  void RawPacket::appendData(const uint8_t *dataToAppend, int64_t dataToAppendLen) {
     memcpy((uint8_t *) m_RawData + m_RawDataLen, dataToAppend, dataToAppendLen);
     m_RawDataLen += dataToAppendLen;
     m_FrameLength = m_RawDataLen;
   }
 
-  void RawPacket::insertData(int atIndex, const uint8_t *dataToInsert, size_t dataToInsertLen) {
+  void RawPacket::insertData(int atIndex, const uint8_t *dataToInsert, int64_t dataToInsertLen) {
     // memmove copies data as if there was an intermediate buffer in between - so it allows for copying processes on overlapping common/dest ptrs
     // if insertData is called with atIndex == m_RawDataLen, then no data is being moved. The data of the raw packet is still extended by dataToInsertLen
     memmove((uint8_t *) m_RawData + atIndex + dataToInsertLen, (uint8_t *) m_RawData + atIndex, m_RawDataLen - atIndex);
@@ -142,7 +141,7 @@ namespace pcpp {
       return false;
     }
 
-    uint8_t *newBuffer = new uint8_t[newBufferLength];
+    auto *newBuffer = new uint8_t[newBufferLength];
     memset(newBuffer, 0, newBufferLength);
     memcpy(newBuffer, m_RawData, m_RawDataLen);
     if (m_DeleteRawDataAtDestructor)
@@ -154,7 +153,7 @@ namespace pcpp {
     return true;
   }
 
-  bool RawPacket::removeData(int atIndex, size_t numOfBytesToRemove) {
+  bool RawPacket::removeData(int atIndex, int64_t numOfBytesToRemove) {
     if ((atIndex + (int) numOfBytesToRemove) > m_RawDataLen) {
       PCPP_LOG_ERROR("Remove section is out of raw packet bound");
       return false;

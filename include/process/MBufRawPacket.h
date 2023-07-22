@@ -166,8 +166,8 @@ namespace pcpp {
      * failed or if copying the data to the mbuf failed. In all of these cases an error will be printed to log
      */
     bool
-    setRawData(const uint8_t *pRawData, int rawDataLen, timespec timestamp, LinkLayerType layerType = LINKTYPE_ETHERNET,
-               int frameLength = -1);
+    init(const uint8_t *pRawData, int rawDataLen, timespec timestamp, LinkLayerType layerType = LINKTYPE_ETHERNET,
+         int frameLength = -1);
 
     /**
      * Clears the object and frees the mbuf
@@ -180,7 +180,7 @@ namespace pcpp {
      * @param[in] dataToAppend A pointer to the data to append
      * @param[in] dataToAppendLen Length in bytes of dataToAppend
      */
-    void appendData(const uint8_t *dataToAppend, size_t dataToAppendLen);
+    void appendData(const uint8_t *dataToAppend, int64_t dataToAppendLen);
 
     /**
      * Insert raw data at some index of the current data and shift the remaining data to the end. This method uses the
@@ -190,7 +190,7 @@ namespace pcpp {
      * @param[in] dataToInsert A pointer to the new data to insert
      * @param[in] dataToInsertLen Length in bytes of dataToInsert
      */
-    void insertData(int atIndex, const uint8_t *dataToInsert, size_t dataToInsertLen);
+    void insertData(int atIndex, const uint8_t *dataToInsert, int64_t dataToInsertLen);
 
     /**
      * Remove certain number of bytes from current raw data buffer. All data after the removed bytes will be shifted back. This method
@@ -200,7 +200,7 @@ namespace pcpp {
      * @return True if all bytes were removed successfully, or false if MBufRawPacket is not initialize (mbuf is NULL), mbuf trim
      * failed or logatIndex+numOfBytesToRemove is out-of-bounds of the raw data buffer. In all of these cases an error is printed to log
      */
-    bool removeData(int atIndex, size_t numOfBytesToRemove);
+    bool removeData(int atIndex, int64_t numOfBytesToRemove);
 
     /**
      * This overridden method,in contrast to its ancestor RawPacket#reallocateData() doesn't need to do anything because mbuf is already

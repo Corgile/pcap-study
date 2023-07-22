@@ -38,7 +38,7 @@ namespace pcpp {
     /**
      * An empty destructor
      */
-    virtual ~IPLayer() {}
+    virtual ~IPLayer() = default;
   };
 }
 

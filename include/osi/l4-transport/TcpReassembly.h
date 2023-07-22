@@ -6,7 +6,7 @@
 #include "PointerVector.h"
 #include <map>
 #include <list>
-#include <time.h>
+#include <ctime>
 
 
 /**
@@ -346,9 +346,9 @@ namespace pcpp {
      * @param[in] onConnectionEndCallback The callback to be invoked when a new connection is terminated (either by a FIN/RST packet or manually by the user). This parameter is optional
      * @param[in] config Optional parameter for defining special configuration parameters. If not set the default parameters will be set
      */
-    explicit TcpReassembly(OnTcpMessageReady onMessageReadyCallback, void *userCookie = NULL,
-                           OnTcpConnectionStart onConnectionStartCallback = NULL,
-                           OnTcpConnectionEnd onConnectionEndCallback = NULL,
+    explicit TcpReassembly(OnTcpMessageReady onMessageReadyCallback, void *userCookie = nullptr,
+                           OnTcpConnectionStart onConnectionStartCallback = nullptr,
+                           OnTcpConnectionEnd onConnectionEndCallback = nullptr,
                            const TcpReassemblyConfiguration &config = TcpReassemblyConfiguration());
 
     /**
@@ -407,7 +407,7 @@ namespace pcpp {
       uint8_t *data;
       timeval timestamp;
 
-      TcpFragment() : sequence(0), dataLength(0), data(NULL) {}
+      TcpFragment() : sequence(0), dataLength(0), data(nullptr) {}
 
       ~TcpFragment() { delete[] data; }
     };

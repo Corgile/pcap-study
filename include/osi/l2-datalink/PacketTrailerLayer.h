@@ -38,7 +38,7 @@ namespace pcpp {
                                                                                                                 prevLayer,
                                                                                                                 packet) { m_Protocol = PacketTrailer; }
 
-    ~PacketTrailerLayer() {}
+    ~PacketTrailerLayer() override = default;
 
     /**
      * Get a pointer to the trailer data
@@ -62,21 +62,21 @@ namespace pcpp {
     /**
      * Does nothing for this layer (PacketTrailerLayer is always last)
      */
-    void parseNextLayer() {}
+    void parseNextLayer() override {}
 
     /**
      * @return trailer data length in bytes
      */
-    size_t getHeaderLen() const { return m_DataLen; }
+    size_t getHeaderLen() const override { return m_DataLen; }
 
     /**
      * Does nothing for this layer
      */
-    void computeCalculateFields() {}
+    void computeCalculateFields() override {}
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelDataLinkLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelDataLinkLayer; }
   };
 
 }

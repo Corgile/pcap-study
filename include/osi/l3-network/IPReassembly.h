@@ -124,8 +124,9 @@ namespace pcpp {
        * A copy constructor for this class
        * @param[in] other The instance to copy from
        */
-      IPv4PacketKey(const IPv4PacketKey &other) : PacketKey(other), m_IpID(other.m_IpID), m_SrcIP(other.m_SrcIP),
-                                                  m_DstIP(other.m_DstIP) {}
+      IPv4PacketKey(const IPv4PacketKey &other)
+          : PacketKey(other), m_IpID(other.m_IpID), m_SrcIP(other.m_SrcIP),
+            m_DstIP(other.m_DstIP) {}
 
       /**
        * Assignment operator for this class
@@ -174,14 +175,14 @@ namespace pcpp {
 
       // implement abstract methods
 
-      uint32_t getHashValue() const;
+      uint32_t getHashValue() const override;
 
       /**
        * @return pcpp#IPv4 protocol
        */
-      ProtocolType getProtocolType() const { return IPv4; }
+      ProtocolType getProtocolType() const override { return IPv4; }
 
-      PacketKey *clone() const { return new IPv4PacketKey(*this); }
+      PacketKey *clone() const override { return new IPv4PacketKey(*this); }
 
     private:
       uint16_t m_IpID;
@@ -266,14 +267,14 @@ namespace pcpp {
 
       // implement abstract methods
 
-      uint32_t getHashValue() const;
+      uint32_t getHashValue() const override;
 
       /**
        * @return pcpp#IPv6 protocol
        */
-      ProtocolType getProtocolType() const { return IPv6; }
+      ProtocolType getProtocolType() const override { return IPv6; }
 
-      PacketKey *clone() const { return new IPv6PacketKey(*this); }
+      PacketKey *clone() const override { return new IPv6PacketKey(*this); }
 
     private:
       uint32_t m_FragmentID;
@@ -320,7 +321,7 @@ namespace pcpp {
      * onFragmentsCleanCallback. This parameter is optional, default cookie is NULL
      * @param[in] maxPacketsToStore Set the capacity limit of the IP reassembly mechanism. Default capacity is #PCPP_IP_REASSEMBLY_DEFAULT_MAX_PACKETS_TO_STORE
      */
-    explicit IPReassembly(OnFragmentsClean onFragmentsCleanCallback = NULL, void *callbackUserCookie = NULL,
+    explicit IPReassembly(OnFragmentsClean onFragmentsCleanCallback = nullptr, void *callbackUserCookie = nullptr,
                           size_t maxPacketsToStore = PCPP_IP_REASSEMBLY_DEFAULT_MAX_PACKETS_TO_STORE)
         : m_PacketLRU(maxPacketsToStore), m_OnFragmentsCleanCallback(onFragmentsCleanCallback),
           m_CallbackUserCookie(callbackUserCookie) {}
@@ -435,7 +436,7 @@ namespace pcpp {
       IPFragment() {
         fragmentOffset = 0;
         lastFragment = false;
-        fragmentData = NULL;
+        fragmentData = nullptr;
         fragmentDataLen = 0;
       }
 
@@ -452,7 +453,7 @@ namespace pcpp {
 
       IPFragmentData(PacketKey *pktKey, uint32_t fragId) {
         currentOffset = 0;
-        data = NULL;
+        data = nullptr;
         deleteData = true;
         fragmentID = fragId;
         packetKey = pktKey;
@@ -460,7 +461,7 @@ namespace pcpp {
 
       ~IPFragmentData() {
         delete packetKey;
-        if (deleteData && data != NULL) { delete data; }
+        if (deleteData && data != nullptr) { delete data; }
       }
     };
 

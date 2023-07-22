@@ -1,18 +1,18 @@
 #ifndef PCAPPP_RAW_PACKET
 #define PCAPPP_RAW_PACKET
 
-#include <stdint.h>
+#include <cstdint>
 
 #ifdef _MSC_VER
 
 #include <WinSock2.h>
-#include <time.h>
+#include <ctime>
 
 #else
 #include <sys/time.h>
 #endif
 
-#include <stddef.h>
+#include <cstddef>
 
 /// @file
 
@@ -254,8 +254,8 @@ namespace pcpp {
   class RawPacket {
   protected:
     uint8_t *m_RawData;
-    int m_RawDataLen;
-    int m_FrameLength;
+    int64_t m_RawDataLen;
+    int64_t m_FrameLength;
     timespec m_TimeStamp;
     bool m_DeleteRawDataAtDestructor;
     bool m_RawPacketSet;
@@ -352,9 +352,9 @@ namespace pcpp {
      * length. This parameter is optional, if not set or set to -1 it is assumed both lengths are equal
      * @return True if raw data was set successfully, false otherwise
      */
-    virtual bool
-    setRawData(const uint8_t *pRawData, int rawDataLen, timespec timestamp, LinkLayerType layerType = LINKTYPE_ETHERNET,
-               int frameLength = -1);
+    bool
+    init(const uint8_t *pRawData, int rawDataLen, timespec timestamp, LinkLayerType layerType = LINKTYPE_ETHERNET,
+         int frameLength = -1);
 
     /**
      * Get raw data pointer
@@ -379,13 +379,13 @@ namespace pcpp {
      * Get raw data length in bytes
      * @return Raw data length in bytes
      */
-    int getRawDataLen() const { return m_RawDataLen; }
+    int getRawDataLen() const { return (int)m_RawDataLen; }
 
     /**
      * Get frame length in bytes
      * @return frame length in bytes
      */
-    int getFrameLength() const { return m_FrameLength; }
+    int getFrameLength() const { return (int)m_FrameLength; }
 
     /**
      * Get raw data timestamp
@@ -409,7 +409,7 @@ namespace pcpp {
 
     /**
      * Get an indication whether raw data was already set for this instance.
-     * @return True if raw data was set for this instance. Raw data can be set using the non-default constructor, using setRawData(), using
+     * @return True if raw data was set for this instance. Raw data can be set using the non-default constructor, using init(), using
      * the copy constructor or using the assignment operator. Returns false otherwise, for example: if the instance was created using the
      * default constructor or clear() was called
      */
@@ -430,7 +430,7 @@ namespace pcpp {
      * @param[in] dataToAppend A pointer to the data to append to current raw data
      * @param[in] dataToAppendLen Length in bytes of dataToAppend
      */
-    virtual void appendData(const uint8_t *dataToAppend, size_t dataToAppendLen);
+    virtual void appendData(const uint8_t *dataToAppend, int64_t dataToAppendLen);
 
     /**
      * Insert new data at some index of the current data and shift the remaining old data to the end. This method works without allocating more memory,
@@ -440,7 +440,7 @@ namespace pcpp {
      * @param[in] dataToInsert A pointer to the new data to insert
      * @param[in] dataToInsertLen Length in bytes of dataToInsert
      */
-    virtual void insertData(int atIndex, const uint8_t *dataToInsert, size_t dataToInsertLen);
+    virtual void insertData(int atIndex, const uint8_t *dataToInsert, int64_t dataToInsertLen);
 
     /**
      * Remove certain number of bytes from current raw data buffer. All data after the removed bytes will be shifted back
@@ -448,7 +448,7 @@ namespace pcpp {
      * @param[in] numOfBytesToRemove Number of bytes to remove
      * @return True if all bytes were removed successfully, or false if atIndex+numOfBytesToRemove is out-of-bounds of the raw data buffer
      */
-    virtual bool removeData(int atIndex, size_t numOfBytesToRemove);
+    virtual bool removeData(int atIndex, int64_t numOfBytesToRemove);
 
     /**
      * Re-allocate raw packet buffer meaning add size to it without losing the current packet data. This method allocates the required buffer size as instructed

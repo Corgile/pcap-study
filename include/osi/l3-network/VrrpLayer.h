@@ -167,7 +167,7 @@ namespace pcpp {
       Other
     };
 
-    virtual ~VrrpLayer() {}
+    ~VrrpLayer() override = default;
 
     /**
     * @return The VRRP IP Address type
@@ -353,7 +353,7 @@ namespace pcpp {
     /**
      * A destructor for this layer (does nothing)
      */
-    ~VrrpV2Layer() {}
+    ~VrrpV2Layer() override = default;
 
     /**
     * @return The VRRP advertisement interval in this message
@@ -425,7 +425,7 @@ namespace pcpp {
     /**
      * A destructor for this layer (does nothing)
      */
-    ~VrrpV3Layer() {}
+    ~VrrpV3Layer() override = default;
 
     /**
     * @return The maximum advertisement interval in this message

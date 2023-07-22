@@ -71,12 +71,13 @@ namespace pcpp {
 
     // protected constructor
     IPv6Extension(IDataContainer *dataContainer, size_t offset) :
-        m_NextHeader(NULL), m_ExtType(IPv6ExtensionUnknown), m_DataContainer(dataContainer), m_Offset(offset),
-        m_ShadowData(NULL) {}
+        m_NextHeader(nullptr), m_ExtType(IPv6ExtensionUnknown), m_DataContainer(dataContainer), m_Offset(offset),
+        m_ShadowData(nullptr) {}
 
     // protected empty constructor
     IPv6Extension() :
-        m_NextHeader(NULL), m_ExtType(IPv6ExtensionUnknown), m_DataContainer(NULL), m_Offset(0), m_ShadowData(NULL) {}
+        m_NextHeader(nullptr), m_ExtType(IPv6ExtensionUnknown), m_DataContainer(nullptr), m_Offset(0),
+        m_ShadowData(nullptr) {}
 
     // protected assignment operator
     IPv6Extension &operator=(const IPv6Extension &other);
@@ -201,11 +202,11 @@ namespace pcpp {
       /**
        * A d'tor for this class, currently does nothing
        */
-      ~IPv6Option() {}
+      ~IPv6Option() override = default;
 
       // implement abstract methods
 
-      size_t getTotalSize() const {
+      size_t getTotalSize() const override {
         if (m_Data == nullptr)
           return 0;
 
@@ -215,7 +216,7 @@ namespace pcpp {
         return (size_t) (m_Data->recordLen + sizeof(uint16_t));
       }
 
-      size_t getDataSize() const {
+      size_t getDataSize() const override {
         if (m_Data == nullptr || m_Data->recordType == Pad0OptionType)
           return 0;
 
@@ -264,8 +265,7 @@ namespace pcpp {
        * A copy constructor that creates an instance of this class out of another instance and copies all the data from it
        * @param[in] other The instance to copy data from
        */
-      IPv6TLVOptionBuilder(const IPv6TLVOptionBuilder &other) :
-          TLVRecordBuilder(other) {}
+      IPv6TLVOptionBuilder(const IPv6TLVOptionBuilder &other) : TLVRecordBuilder(other) {}
 
       /**
        * Assignment operator that copies all data from another instance of IPv6TLVOptionBuilder
@@ -512,7 +512,7 @@ namespace pcpp {
      * calculation is: [ 4 * (ipv6_authentication_header#headerLen + 2) ]
      * @return The length of this extension
      */
-    size_t getExtensionLen() const { return 4 * (getBaseHeader()->headerLen + 2); }
+    size_t getExtensionLen() const override { return 4 * (getBaseHeader()->headerLen + 2); }
 
   private:
 

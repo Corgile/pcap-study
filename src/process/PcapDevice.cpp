@@ -6,8 +6,7 @@
 
 namespace pcpp {
 
-  IPcapDevice::~IPcapDevice() {
-  }
+  IPcapDevice::~IPcapDevice() = default;
 
   bool IPcapDevice::setFilter(std::string filterAsString) {
     PCPP_LOG_DEBUG("Filter to be set: '" << filterAsString << "'");
@@ -55,7 +54,7 @@ namespace pcpp {
   }
 
   std::string IPcapDevice::getPcapLibVersionInfo() {
-    return std::string(pcap_lib_version());
+    return {pcap_lib_version()};
   }
 
 } // namespace pcpp

@@ -158,7 +158,7 @@ namespace pcpp {
      * Sets the protocol id
      * @param[in] value ID of the protocol
      */
-    void setProtoId(uint16_t value) { getStpHeader()->protoId = value; }
+    void setProtoId(uint16_t value) const { getStpHeader()->protoId = value; }
 
     /**
      * Returns the version. Fixed at 0x0 for STP messages
@@ -170,7 +170,7 @@ namespace pcpp {
      * Sets the version
      * @param[in] value Version number
      */
-    void setVersion(uint8_t value) { getStpHeader()->version = value; }
+    void setVersion(uint8_t value) const { getStpHeader()->version = value; }
 
     /**
      * Returns the type of configuration message.
@@ -182,22 +182,22 @@ namespace pcpp {
      * Sets the type of configuration message
      * @param[in] value Type of configuration message
      */
-    void setType(uint8_t value) { getStpHeader()->type = value; }
+    void setType(uint8_t value) const { getStpHeader()->type = value; }
 
     // overridden methods
 
     /**
      * @return The size of STP packet
      */
-    size_t getHeaderLen() const { return m_DataLen; }
+    size_t getHeaderLen() const override { return m_DataLen; }
 
     /// Does nothing for this layer
-    void computeCalculateFields() {}
+    void computeCalculateFields() override {}
 
     /**
      * @return The OSI layer level of STP (Data Link AbstractLayer).
      */
-    OsiModelLayer getOsiModelLayer() const { return OsiModelDataLinkLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelDataLinkLayer; }
 
     /**
      * A static method that validates the input data
@@ -256,15 +256,15 @@ namespace pcpp {
     /**
      * @return The size of STP TCN message
      */
-    size_t getHeaderLen() const { return sizeof(stp_tcn_bpdu); }
+    size_t getHeaderLen() const override { return sizeof(stp_tcn_bpdu); }
 
     /// Parses next layer
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return Returns the protocol info as readable string
      */
-    std::string toString() const { return "Spanning Tree Topology Change Notification"; }
+    std::string toString() const override { return "Spanning Tree Topology Change Notification"; }
 
     /**
      * A static method that validates the input data
@@ -317,7 +317,7 @@ namespace pcpp {
      * Returns the flags of configuration message which indicates purpose of BPDU
      * @param[in] value Flags of the configuration message
      */
-    void setFlag(uint8_t value) { getStpConfHeader()->flag = value; }
+    void setFlag(uint8_t value) const { getStpConfHeader()->flag = value; }
 
     /**
      * Returns the root bridge identifier
@@ -492,15 +492,15 @@ namespace pcpp {
     /**
      * @return The size of STP configuration BPDU message
      */
-    size_t getHeaderLen() const { return sizeof(stp_conf_bpdu); }
+    size_t getHeaderLen() const override { return sizeof(stp_conf_bpdu); }
 
     /// Parses next layer
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return Returns the protocol info as readable string
      */
-    std::string toString() const { return "Spanning Tree Configuration"; }
+    std::string toString() const override { return "Spanning Tree Configuration"; }
 
     /**
      * A static method that validates the input data
@@ -555,22 +555,22 @@ namespace pcpp {
      * Returns the length of version1 field
      * @param[in] value Length of the version1 field
      */
-    void setVersion1Len(uint8_t value) { getRstpConfHeader()->version1Len = value; }
+    void setVersion1Len(uint8_t value) const { getRstpConfHeader()->version1Len = value; }
 
     // overridden methods
 
     /**
      * @return The size of Rapid STP message
      */
-    size_t getHeaderLen() const { return sizeof(rstp_conf_bpdu); }
+    size_t getHeaderLen() const override { return sizeof(rstp_conf_bpdu); }
 
     /// Parses next layer
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return Returns the protocol info as readable string
      */
-    std::string toString() const { return "Rapid Spanning Tree"; }
+    std::string toString() const override { return "Rapid Spanning Tree"; }
 
     /**
      * A static method that validates the input data
@@ -633,7 +633,7 @@ namespace pcpp {
      * Sets the configuration ID format selector
      * @param[in] value Configuration ID of format selector
      */
-    void setMstConfigurationFormatSelector(uint8_t value) { getMstpHeader()->mstConfigFormatSelector = value; }
+    void setMstConfigurationFormatSelector(uint8_t value) const { getMstpHeader()->mstConfigFormatSelector = value; }
 
     /**
      * Returns the pointer to configuration name field
@@ -743,7 +743,7 @@ namespace pcpp {
      * Returns the remaining hop count
      * @param[in] value Value of remaining hop count
      */
-    void setRemainingHopCount(uint8_t value) { getMstpHeader()->remainId = value; }
+    void setRemainingHopCount(uint8_t value) const { getMstpHeader()->remainId = value; }
 
     /**
      * Returns the total number of MSTI configuration messages
@@ -764,12 +764,12 @@ namespace pcpp {
     // overridden methods
 
     /// Parses next layer
-    void parseNextLayer() {}
+    void parseNextLayer() override {}
 
     /**
      * @return Returns the protocol info as readable string
      */
-    std::string toString() const { return "Multiple Spanning Tree"; }
+    std::string toString() const override { return "Multiple Spanning Tree"; }
 
     /**
      * A static method that validates the input data

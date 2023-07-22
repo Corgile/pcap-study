@@ -3,7 +3,7 @@
 
 #include "osi/AbstractLayer.h"
 #include "osi/TLVData.h"
-#include <string.h>
+#include <cstring>
 
 /// @file
 
@@ -204,7 +204,7 @@ namespace pcpp {
     /**
      * A d'tor for this class, currently does nothing
      */
-    ~TcpOption() {}
+    ~TcpOption() override = default;
 
     /**
      * @return TCP option type casted as pcpp::TcpOptionType enum. If the data is null a value
@@ -219,7 +219,7 @@ namespace pcpp {
 
     // implement abstract methods
 
-    size_t getTotalSize() const {
+    size_t getTotalSize() const override {
       if (m_Data == nullptr)
         return 0;
 
@@ -229,7 +229,7 @@ namespace pcpp {
       return (size_t) m_Data->recordLen;
     }
 
-    size_t getDataSize() const {
+    size_t getDataSize() const override {
       if (m_Data == nullptr)
         return 0;
 
@@ -340,7 +340,7 @@ namespace pcpp {
      */
     TcpLayer(uint16_t portSrc, uint16_t portDst);
 
-    ~TcpLayer() {}
+    ~TcpLayer() override = default;
 
     /**
      * A copy constructor that copy the entire common from the other TcpLayer (including TCP options)
@@ -452,21 +452,21 @@ namespace pcpp {
     /**
      * Currently identifies the following next layers: HttpRequestLayer, HttpResponseLayer. Otherwise sets PayloadLayer
      */
-    void parseNextLayer();
+    void parseNextLayer() override;
 
     /**
      * @return Size of @ref tcphdr + all TCP options
      */
-    size_t getHeaderLen() const { return getTcpHeader()->dataOffset * 4; }
+    size_t getHeaderLen() const override { return getTcpHeader()->dataOffset * 4; }
 
     /**
      * Calculate @ref tcphdr#headerChecksum field
      */
-    void computeCalculateFields();
+    void computeCalculateFields() override;
 
-    std::string toString() const;
+    std::string toString() const override;
 
-    OsiModelLayer getOsiModelLayer() const { return OsiModelTransportLayer; }
+    OsiModelLayer getOsiModelLayer() const override { return OsiModelTransportLayer; }
 
   private:
 
@@ -488,7 +488,7 @@ namespace pcpp {
   // implementation of inline methods
 
   bool TcpLayer::isDataValid(const uint8_t *data, size_t dataLen) {
-    const tcphdr *hdr = reinterpret_cast<const tcphdr *>(data);
+    const auto *hdr = reinterpret_cast<const tcphdr *>(data);
     return dataLen >= sizeof(tcphdr)
            && hdr->dataOffset >= 5 /* the minimum TCP common size */
            && dataLen >= hdr->dataOffset * sizeof(uint32_t);

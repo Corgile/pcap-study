@@ -90,13 +90,13 @@ namespace pcpp {
      * Get the sender hardware address (SHA) in the form of MacAddress
      * @return A MacAddress containing the sender hardware address (SHA)
      */
-    inline MacAddress getSenderMacAddress() const { return MacAddress(getArpHeader()->senderMacAddr); }
+    inline MacAddress getSenderMacAddress() const { return {getArpHeader()->senderMacAddr}; }
 
     /**
      * Get the target hardware address (THA) in the form of MacAddress
      * @return A MacAddress containing the target hardware address (THA)
      */
-    inline MacAddress getTargetMacAddress() const { return MacAddress(getArpHeader()->targetMacAddr); }
+    inline MacAddress getTargetMacAddress() const { return {getArpHeader()->targetMacAddr}; }
 
     /**
      * Get the sender protocol address (SPA) in the form of IPv4Address
